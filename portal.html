@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal | Saint Patrick's Academy, Inc.</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="portal-page">
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Saint Patrick's Academy, Inc.">
+      <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
+      <span>Saint Patrick's Academy, Inc.</span>
+    </a>
+
+    <nav aria-label="Portal navigation">
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="announcements.html">Announcements</a>
+      <a href="#create-account">Create Account</a>
+      <a href="#accounts">Accounts</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </header>
+
+  <main class="portal-main">
+    <section class="portal-hero">
+      <div>
+        <p class="eyebrow">Student Portal</p>
+        <h1>Create Student Account</h1>
+        <p>
+          Register a student portal account for school records, class updates,
+          guardian details, and future online services.
+        </p>
+      </div>
+      <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
+    </section>
+
+    <section class="portal-grid" id="create-account">
+      <form class="account-form" id="accountForm">
+        <div>
+          <p class="eyebrow">Account Details</p>
+          <h2>New Student</h2>
+        </div>
+
+        <label>
+          Student full name
+          <input name="studentName" type="text" placeholder="Enter student name" required>
+        </label>
+
+        <label>
+          Student ID
+          <input name="studentId" type="text" placeholder="SPAI-2026-001" required>
+        </label>
+
+        <label>
+          Grade level
+          <select name="gradeLevel" required>
+            <option value="">Select grade level</option>
+            <option>Kindergarten</option>
+            <option>Grade 1</option>
+            <option>Grade 2</option>
+            <option>Grade 3</option>
+            <option>Grade 4</option>
+            <option>Grade 5</option>
+            <option>Grade 6</option>
+            <option>Grade 7</option>
+            <option>Grade 8</option>
+            <option>Grade 9</option>
+            <option>Grade 10</option>
+            <option>Grade 11</option>
+            <option>Grade 12</option>
+          </select>
+        </label>
+
+        <label>
+          Guardian name
+          <input name="guardianName" type="text" placeholder="Enter guardian name" required>
+        </label>
+
+        <label>
+          Guardian contact
+          <input name="guardianContact" type="tel" placeholder="Phone number or email" required>
+        </label>
+
+        <label>
+          Portal username
+          <input name="username" type="text" placeholder="student.username" required>
+        </label>
+
+        <label>
+          Portal password
+          <input name="password" type="password" placeholder="Create student password" required>
+        </label>
+
+        <button class="contact-button" type="submit">Create Account</button>
+        <p class="form-note">Prototype only: accounts are saved in this browser for preview.</p>
+      </form>
+
+      <aside class="portal-card">
+        <p class="eyebrow">Portal Includes</p>
+        <h2>For each student</h2>
+        <ul>
+          <li>Student profile and grade level</li>
+          <li>Guardian contact information</li>
+          <li>Private username and password for student login</li>
+          <li>Account list for school staff review</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="accounts-section" id="accounts">
+      <div>
+        <p class="eyebrow">Created Accounts</p>
+        <h2>Student Account List</h2>
+      </div>
+      <div class="account-list" id="accountList"></div>
+    </section>
+  </main>
+
+  <script src="portal.js"></script>
+</body>
+</html>
