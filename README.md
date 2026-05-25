@@ -1,6 +1,9 @@
 # Saint Patrick's Academy Website
 
-This version includes a Node.js backend with a SQLite database.
+This version includes a Node.js backend with database support.
+
+- Local computer: SQLite file database
+- Online hosting: PostgreSQL through `DATABASE_URL`
 
 ## Run Locally
 
@@ -33,8 +36,16 @@ To change it when running locally:
 
 ## Data Storage
 
-Student accounts and bills are saved in:
+Local student accounts and bills are saved in:
 
 `data/school.db`
 
-This backend is a starter prototype. For real public school use, passwords should be hashed and the site should use a production database service.
+For online hosting, create a PostgreSQL database and add this environment variable to your web service:
+
+`DATABASE_URL=your-postgresql-connection-string`
+
+If your database provider requires SSL, also add:
+
+`DATABASE_SSL=true`
+
+This backend is a starter prototype. For real public school use, passwords should be hashed before launch.

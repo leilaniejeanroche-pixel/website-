@@ -1,18 +1,32 @@
 const fs = require("fs");
 const path = require("path");
-const Database = require("better-sqlite3");
 
-const dataDir = path.join(__dirname, "data");
-const dbPath = path.join(dataDir, "school.db");
+const usePostgres = Boolean(process.env.DATABASE_URL);
 
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+let sqliteDb;
+let pgPool;
+
+if (usePostgres) {
+  const { Pool } = require("pg");
+
+  pgPool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : undefined
+  });
+} else {
+  const Database = require("better-sqlite3");
+  const dataDir = path.join(__dirname, "data");
+  const dbPath = path.join(dataDir, "school.db");
+
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
+  sqliteDb = new Database(dbPath);
+  sqliteDb.pragma("journal_mode = WAL");
 }
 
-const db = new Database(dbPath);
-db.pragma("journal_mode = WAL");
-
-db.exec(`
+const sqliteSchema = `
   CREATE TABLE IF NOT EXISTS students (
     id TEXT PRIMARY KEY,
     student_name TEXT NOT NULL,
@@ -33,7 +47,29 @@ db.exec(`
     position INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (student_id_ref) REFERENCES students(id) ON DELETE CASCADE
   );
-`);
+`;
+
+const postgresSchema = `
+  CREATE TABLE IF NOT EXISTS students (
+    id TEXT PRIMARY KEY,
+    student_name TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    grade_level TEXT NOT NULL,
+    guardian_name TEXT NOT NULL,
+    guardian_contact TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS bills (
+    id SERIAL PRIMARY KEY,
+    student_id_ref TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    label TEXT NOT NULL,
+    amount NUMERIC NOT NULL DEFAULT 0,
+    position INTEGER NOT NULL DEFAULT 0
+  );
+`;
 
 function rowToStudent(row) {
   if (!row) return null;
@@ -51,26 +87,88 @@ function rowToStudent(row) {
   };
 }
 
-function getBills(studentId) {
-  return db
-    .prepare("SELECT id, label, amount FROM bills WHERE student_id_ref = ? ORDER BY position, id")
-    .all(studentId)
-    .map((bill) => ({
-      id: bill.id,
-      label: bill.label,
-      amount: bill.amount
-    }));
-}
-
-function withBills(student) {
+function rowToBill(row) {
   return {
-    ...student,
-    bills: getBills(student.id)
+    id: row.id,
+    label: row.label,
+    amount: Number(row.amount) || 0
   };
 }
 
-function createStudent(student, bills) {
-  const insertStudent = db.prepare(`
+async function init() {
+  if (usePostgres) {
+    await pgPool.query(postgresSchema);
+    return;
+  }
+
+  sqliteDb.exec(sqliteSchema);
+}
+
+async function getBills(studentId) {
+  if (usePostgres) {
+    const result = await pgPool.query(
+      "SELECT id, label, amount FROM bills WHERE student_id_ref = $1 ORDER BY position, id",
+      [studentId]
+    );
+    return result.rows.map(rowToBill);
+  }
+
+  return sqliteDb
+    .prepare("SELECT id, label, amount FROM bills WHERE student_id_ref = ? ORDER BY position, id")
+    .all(studentId)
+    .map(rowToBill);
+}
+
+async function withBills(student) {
+  return {
+    ...student,
+    bills: await getBills(student.id)
+  };
+}
+
+async function createStudent(student, bills) {
+  if (usePostgres) {
+    const client = await pgPool.connect();
+
+    try {
+      await client.query("BEGIN");
+      await client.query(
+        `INSERT INTO students (
+          id, student_name, student_id, grade_level, guardian_name,
+          guardian_contact, username, password, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [
+          student.id,
+          student.studentName,
+          student.studentId,
+          student.gradeLevel,
+          student.guardianName,
+          student.guardianContact,
+          student.username,
+          student.password,
+          student.createdAt
+        ]
+      );
+
+      for (const [index, bill] of bills.entries()) {
+        await client.query(
+          "INSERT INTO bills (student_id_ref, label, amount, position) VALUES ($1, $2, $3, $4)",
+          [student.id, bill.label, bill.amount, index]
+        );
+      }
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return withBills(student);
+  }
+
+  const insertStudent = sqliteDb.prepare(`
     INSERT INTO students (
       id, student_name, student_id, grade_level, guardian_name,
       guardian_contact, username, password, created_at
@@ -81,12 +179,12 @@ function createStudent(student, bills) {
     )
   `);
 
-  const insertBill = db.prepare(`
+  const insertBill = sqliteDb.prepare(`
     INSERT INTO bills (student_id_ref, label, amount, position)
     VALUES (?, ?, ?, ?)
   `);
 
-  const transaction = db.transaction(() => {
+  const transaction = sqliteDb.transaction(() => {
     insertStudent.run(student);
     bills.forEach((bill, index) => {
       insertBill.run(student.id, bill.label, bill.amount, index);
@@ -97,38 +195,82 @@ function createStudent(student, bills) {
   return withBills(student);
 }
 
-function findStudentByUsername(username) {
-  const row = db.prepare("SELECT * FROM students WHERE username = ?").get(username);
-  return rowToStudent(row);
+async function findStudentByUsername(username) {
+  if (usePostgres) {
+    const result = await pgPool.query("SELECT * FROM students WHERE username = $1", [username]);
+    return rowToStudent(result.rows[0]);
+  }
+
+  return rowToStudent(sqliteDb.prepare("SELECT * FROM students WHERE username = ?").get(username));
 }
 
-function findStudentByLogin(username, password) {
-  const row = db
-    .prepare("SELECT * FROM students WHERE username = ? AND password = ?")
-    .get(username, password);
-  const student = rowToStudent(row);
+async function findStudentByLogin(username, password) {
+  let student;
+
+  if (usePostgres) {
+    const result = await pgPool.query("SELECT * FROM students WHERE username = $1 AND password = $2", [
+      username,
+      password
+    ]);
+    student = rowToStudent(result.rows[0]);
+  } else {
+    student = rowToStudent(
+      sqliteDb.prepare("SELECT * FROM students WHERE username = ? AND password = ?").get(username, password)
+    );
+  }
+
   return student ? withBills(student) : null;
 }
 
-function getAllStudents() {
-  return db
-    .prepare("SELECT * FROM students ORDER BY created_at DESC")
-    .all()
-    .map(rowToStudent)
-    .map(withBills);
+async function getAllStudents() {
+  if (usePostgres) {
+    const result = await pgPool.query("SELECT * FROM students ORDER BY created_at DESC");
+    return Promise.all(result.rows.map(rowToStudent).map(withBills));
+  }
+
+  return Promise.all(
+    sqliteDb
+      .prepare("SELECT * FROM students ORDER BY created_at DESC")
+      .all()
+      .map(rowToStudent)
+      .map(withBills)
+  );
 }
 
-function getStudentById(id) {
-  const student = rowToStudent(db.prepare("SELECT * FROM students WHERE id = ?").get(id));
+async function getStudentById(id) {
+  let student;
+
+  if (usePostgres) {
+    const result = await pgPool.query("SELECT * FROM students WHERE id = $1", [id]);
+    student = rowToStudent(result.rows[0]);
+  } else {
+    student = rowToStudent(sqliteDb.prepare("SELECT * FROM students WHERE id = ?").get(id));
+  }
+
   return student ? withBills(student) : null;
 }
 
-function addBill(studentId, bill) {
+async function addBill(studentId, bill) {
+  if (usePostgres) {
+    const positionResult = await pgPool.query(
+      "SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM bills WHERE student_id_ref = $1",
+      [studentId]
+    );
+    await pgPool.query("INSERT INTO bills (student_id_ref, label, amount, position) VALUES ($1, $2, $3, $4)", [
+      studentId,
+      bill.label,
+      bill.amount,
+      positionResult.rows[0].next_position || 0
+    ]);
+    return getStudentById(studentId);
+  }
+
   const nextPosition =
-    db.prepare("SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM bills WHERE student_id_ref = ?").get(studentId)
-      .next_position || 0;
+    sqliteDb
+      .prepare("SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM bills WHERE student_id_ref = ?")
+      .get(studentId).next_position || 0;
 
-  db.prepare("INSERT INTO bills (student_id_ref, label, amount, position) VALUES (?, ?, ?, ?)").run(
+  sqliteDb.prepare("INSERT INTO bills (student_id_ref, label, amount, position) VALUES (?, ?, ?, ?)").run(
     studentId,
     bill.label,
     bill.amount,
@@ -138,16 +280,29 @@ function addBill(studentId, bill) {
   return getStudentById(studentId);
 }
 
-function updateBill(studentId, billId, bill) {
-  const result = db
+async function updateBill(studentId, billId, bill) {
+  if (usePostgres) {
+    const result = await pgPool.query(
+      "UPDATE bills SET label = $1, amount = $2 WHERE student_id_ref = $3 AND id = $4",
+      [bill.label, bill.amount, studentId, billId]
+    );
+    return result.rowCount > 0 ? getStudentById(studentId) : null;
+  }
+
+  const result = sqliteDb
     .prepare("UPDATE bills SET label = ?, amount = ? WHERE student_id_ref = ? AND id = ?")
     .run(bill.label, bill.amount, studentId, billId);
 
   return result.changes > 0 ? getStudentById(studentId) : null;
 }
 
-function removeBill(studentId, billId) {
-  db.prepare("DELETE FROM bills WHERE student_id_ref = ? AND id = ?").run(studentId, billId);
+async function removeBill(studentId, billId) {
+  if (usePostgres) {
+    await pgPool.query("DELETE FROM bills WHERE student_id_ref = $1 AND id = $2", [studentId, billId]);
+    return getStudentById(studentId);
+  }
+
+  sqliteDb.prepare("DELETE FROM bills WHERE student_id_ref = ? AND id = ?").run(studentId, billId);
   return getStudentById(studentId);
 }
 
@@ -158,6 +313,7 @@ module.exports = {
   findStudentByUsername,
   getAllStudents,
   getStudentById,
+  init,
   removeBill,
   updateBill
 };
