@@ -1,7 +1,10 @@
 :root {
   --green-900: #0f3d2e;
   --green-700: #1f6b4d;
+  --green-500: #49a16f;
   --green-100: #e8f5ee;
+  --gold: #d8a83f;
+  --cream: #fffaf0;
   --ink: #183026;
   --muted: #62756c;
   --line: #d7e7de;
@@ -24,7 +27,10 @@ html {
 body {
   margin: 0;
   color: var(--ink);
-  background: #f6faf7;
+  background:
+    radial-gradient(circle at top left, rgba(216, 168, 63, 0.14), transparent 30%),
+    radial-gradient(circle at 80% 8%, rgba(31, 107, 77, 0.12), transparent 26%),
+    #f6faf7;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -39,7 +45,7 @@ body {
   justify-content: space-between;
   gap: 18px;
   padding: 14px 6vw;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.9);
   border-bottom: 1px solid rgba(215, 231, 222, 0.8);
   backdrop-filter: blur(12px);
 }
@@ -69,10 +75,28 @@ body {
 }
 
 .site-header nav a {
+  position: relative;
   color: var(--green-900);
   text-decoration: none;
   font-size: 14px;
   font-weight: 700;
+}
+
+.site-header nav a:not(.nav-pill)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: var(--gold);
+  transition: transform 160ms ease;
+}
+
+.site-header nav a:hover::after {
+  transform: scaleX(1);
 }
 
 .site-header nav a.nav-pill {
@@ -106,7 +130,8 @@ body {
   align-items: end;
   padding-bottom: 96px;
   background:
-    linear-gradient(90deg, rgba(8, 45, 31, 0.92) 0%, rgba(15, 61, 46, 0.72) 48%, rgba(15, 61, 46, 0.18) 100%),
+    linear-gradient(90deg, rgba(8, 45, 31, 0.94) 0%, rgba(15, 61, 46, 0.72) 48%, rgba(15, 61, 46, 0.1) 100%),
+    radial-gradient(circle at 14% 78%, rgba(216, 168, 63, 0.28), transparent 26%),
     url("assets/bg.jpg") center / cover;
 }
 
@@ -137,7 +162,7 @@ body {
   margin-bottom: 20px;
   border: 5px solid var(--white);
   border-radius: 50%;
-  box-shadow: var(--shadow);
+  box-shadow: 0 0 0 8px rgba(216, 168, 63, 0.25), var(--shadow);
 }
 
 .eyebrow {
@@ -200,6 +225,12 @@ h2 {
   background: rgba(255, 255, 255, 0.12);
   text-decoration: none;
   font-weight: 800;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.ghost-button:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .ghost-button.green {
@@ -213,7 +244,8 @@ h2 {
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 8px;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.1));
   backdrop-filter: blur(14px);
   box-shadow: var(--shadow);
 }
@@ -255,8 +287,20 @@ h2 {
 }
 
 .school-info-strip article {
+  position: relative;
+  overflow: hidden;
   padding: 24px 6vw;
   background: #ffffff;
+}
+
+.school-info-strip article::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--green-700), var(--gold));
 }
 
 .school-info-strip strong,
@@ -276,7 +320,8 @@ h2 {
 
 .dashboard-preview {
   padding: 72px 6vw;
-  background: #f6faf7;
+  background:
+    linear-gradient(180deg, #f6faf7, #ffffff);
 }
 
 .preview-heading {
@@ -314,6 +359,20 @@ h2 {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 14px 30px rgba(15, 61, 46, 0.1);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.preview-panel:hover,
+.directory-grid article:hover,
+.gallery-grid article:hover,
+.download-list article:hover,
+.faq-list details:hover,
+.announcement-card:hover,
+.news-card:hover,
+.values-grid article:hover {
+  transform: translateY(-4px);
+  border-color: rgba(31, 107, 77, 0.36);
+  box-shadow: 0 20px 42px rgba(15, 61, 46, 0.16);
 }
 
 .preview-panel {
@@ -334,7 +393,8 @@ h2 {
 .mini-update {
   padding: 14px;
   border-radius: 8px;
-  background: var(--green-100);
+  background:
+    linear-gradient(135deg, var(--green-100), #ffffff);
 }
 
 .mini-update span,
@@ -385,6 +445,7 @@ h2 {
   padding: 84px 6vw 48px;
   background:
     radial-gradient(circle at top left, rgba(31, 107, 77, 0.11), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(216, 168, 63, 0.16), transparent 28%),
     #ffffff;
 }
 
@@ -418,7 +479,7 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--green-900);
-  background: var(--green-100);
+  background: linear-gradient(135deg, var(--green-100), #ffffff);
   font-size: 14px;
   font-weight: 800;
 }
@@ -437,7 +498,8 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 249, 0.96));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 249, 0.96)),
+    radial-gradient(circle at top right, rgba(216, 168, 63, 0.2), transparent 35%);
   box-shadow: 0 18px 38px rgba(15, 61, 46, 0.1);
 }
 
@@ -461,7 +523,7 @@ h2 {
   margin-bottom: 22px;
   border-radius: 8px;
   color: #ffffff;
-  background: var(--green-700);
+  background: linear-gradient(135deg, var(--green-700), var(--gold));
   font-weight: 800;
 }
 
@@ -494,6 +556,8 @@ h2 {
     linear-gradient(180deg, rgba(15, 61, 46, 0.05), rgba(15, 61, 46, 0.22)),
     url("assets/bg.jpg") center / cover;
   box-shadow: var(--shadow);
+  outline: 8px solid rgba(232, 245, 238, 0.75);
+  outline-offset: -18px;
 }
 
 .campus-content {
@@ -502,7 +566,8 @@ h2 {
   padding: 36px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--green-100);
+  background:
+    linear-gradient(135deg, var(--green-100), var(--cream));
 }
 
 .campus-content .eyebrow {
@@ -544,16 +609,26 @@ h2 {
   border: 0;
   border-radius: 8px;
   color: var(--white);
-  background: var(--green-700);
+  background: linear-gradient(135deg, var(--green-700), var(--green-500));
   cursor: pointer;
   text-decoration: none;
   font-weight: 800;
   white-space: nowrap;
+  box-shadow: 0 10px 22px rgba(31, 107, 77, 0.2);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.contact-button:hover,
+.small-button:hover,
+.quick-link-grid a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(31, 107, 77, 0.26);
 }
 
 .portal-page {
   min-height: 100vh;
   background:
+    radial-gradient(circle at top left, rgba(216, 168, 63, 0.16), transparent 28%),
     linear-gradient(180deg, rgba(232, 245, 238, 0.94), rgba(246, 250, 247, 0.98)),
     url("assets/bg.jpg") center / cover fixed;
 }
@@ -571,7 +646,8 @@ h2 {
   padding: 30px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(232, 245, 238, 0.92));
   box-shadow: var(--shadow);
 }
 
@@ -611,6 +687,18 @@ h2 {
   border-radius: 8px;
   background: var(--white);
   box-shadow: 0 14px 30px rgba(15, 61, 46, 0.1);
+}
+
+.account-form,
+.portal-card,
+.accounts-section,
+.admin-panel,
+.subject-panel,
+.bill-panel,
+.login-panel,
+.info-form {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 253, 251, 0.96));
 }
 
 .account-form {
@@ -725,11 +813,12 @@ h2 {
   padding: 0 14px;
   border-radius: 8px;
   color: var(--white);
-  background: var(--green-700);
+  background: linear-gradient(135deg, var(--green-700), var(--green-500));
   text-decoration: none;
   font-size: 14px;
   font-weight: 800;
   white-space: nowrap;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .student-profile {
@@ -763,7 +852,8 @@ h2 {
   padding: 18px;
   border-radius: 8px;
   color: var(--white);
-  background: var(--green-700);
+  background:
+    linear-gradient(135deg, var(--green-700), var(--green-900));
 }
 
 .profile-card span,
@@ -830,7 +920,7 @@ h2 {
 .bill-total {
   margin-top: 14px;
   color: var(--white);
-  background: var(--green-700);
+  background: linear-gradient(135deg, var(--green-700), var(--green-900));
 }
 
 .bill-total span {
@@ -1073,7 +1163,19 @@ h2 {
 .gallery-grid article,
 .download-list article,
 .contact-detail {
+  position: relative;
+  overflow: hidden;
   padding: 22px;
+}
+
+.directory-grid article::before,
+.download-list article::before,
+.contact-detail::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--green-700), var(--gold));
 }
 
 .directory-grid strong,
@@ -1123,7 +1225,7 @@ h2 {
   margin: -22px -22px 18px;
   border-radius: 8px 8px 0 0;
   background:
-    linear-gradient(180deg, rgba(15, 61, 46, 0.02), rgba(15, 61, 46, 0.18)),
+    linear-gradient(180deg, rgba(15, 61, 46, 0.02), rgba(15, 61, 46, 0.24)),
     url("assets/bg.jpg") center / cover;
 }
 
@@ -1182,7 +1284,8 @@ h2 {
   display: grid;
   align-content: end;
   background:
-    linear-gradient(90deg, rgba(15, 61, 46, 0.88), rgba(15, 61, 46, 0.42)),
+    linear-gradient(90deg, rgba(15, 61, 46, 0.9), rgba(15, 61, 46, 0.38)),
+    radial-gradient(circle at 20% 80%, rgba(216, 168, 63, 0.28), transparent 30%),
     url("assets/bg.jpg") center / cover;
 }
 
@@ -1200,7 +1303,7 @@ h2 {
   padding: 0 12px;
   border-radius: 8px;
   color: #ffffff;
-  background: var(--green-700);
+  background: linear-gradient(135deg, var(--green-700), var(--gold));
   font-weight: 800;
 }
 
@@ -1228,7 +1331,7 @@ h2 {
 
 .announcement-card.important {
   border-color: var(--green-700);
-  background: var(--green-100);
+  background: linear-gradient(135deg, var(--green-100), var(--cream));
 }
 
 @media (max-width: 900px) {
