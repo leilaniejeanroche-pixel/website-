@@ -274,6 +274,109 @@ h2 {
   color: var(--muted);
 }
 
+.dashboard-preview {
+  padding: 72px 6vw;
+  background: #f6faf7;
+}
+
+.preview-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.preview-heading .eyebrow {
+  color: var(--green-700);
+}
+
+.preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.85fr;
+  gap: 16px;
+}
+
+.preview-panel,
+.directory-grid article,
+.info-form,
+.gallery-grid article,
+.download-list article,
+.faq-list details,
+.contact-detail {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 30px rgba(15, 61, 46, 0.1);
+}
+
+.preview-panel {
+  padding: 22px;
+}
+
+.preview-panel h3 {
+  margin: 0 0 14px;
+  color: var(--green-900);
+  font-size: 22px;
+}
+
+.mini-updates {
+  display: grid;
+  gap: 10px;
+}
+
+.mini-update {
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--green-100);
+}
+
+.mini-update span,
+.download-list span,
+.directory-grid span {
+  display: block;
+  color: var(--green-700);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.mini-update strong {
+  display: block;
+  margin: 6px 0;
+  color: var(--green-900);
+}
+
+.mini-update p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.quick-link-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.quick-link-grid a {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--green-700);
+  text-decoration: none;
+  font-weight: 800;
+}
+
 .intro-section {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1.15fr);
@@ -956,6 +1059,114 @@ h2 {
   gap: 18px;
 }
 
+.directory-grid,
+.form-grid,
+.gallery-grid,
+.download-list,
+.contact-page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.directory-grid article,
+.gallery-grid article,
+.download-list article,
+.contact-detail {
+  padding: 22px;
+}
+
+.directory-grid strong,
+.gallery-grid strong,
+.download-list strong,
+.contact-detail strong {
+  display: block;
+  color: var(--green-900);
+  font-size: 22px;
+}
+
+.directory-grid p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+.info-form {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+}
+
+.info-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--green-900);
+  font-weight: 800;
+}
+
+.info-form input,
+.info-form textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.info-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.gallery-grid article div {
+  min-height: 220px;
+  margin: -22px -22px 18px;
+  border-radius: 8px 8px 0 0;
+  background:
+    linear-gradient(180deg, rgba(15, 61, 46, 0.02), rgba(15, 61, 46, 0.18)),
+    url("assets/bg.jpg") center / cover;
+}
+
+.gallery-grid span,
+.contact-detail span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.download-list article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.download-list span {
+  grid-column: 1 / 2;
+}
+
+.faq-list {
+  display: grid;
+  gap: 12px;
+}
+
+.faq-list details {
+  padding: 18px 22px;
+}
+
+.faq-list summary {
+  color: var(--green-900);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.faq-list p {
+  margin: 12px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 .news-card,
 .announcement-card {
   padding: 24px;
@@ -1034,6 +1245,12 @@ h2 {
   .campus-section,
   .school-hero,
   .school-info-strip,
+  .preview-grid,
+  .directory-grid,
+  .form-grid,
+  .gallery-grid,
+  .download-list,
+  .contact-page-grid,
   .portal-grid,
   .account-form,
   .account-item,
@@ -1059,6 +1276,11 @@ h2 {
   }
 
   .admin-editor-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .preview-heading {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -1092,6 +1314,10 @@ h2 {
   }
 
   .intro-section {
+    padding: 48px 20px;
+  }
+
+  .dashboard-preview {
     padding: 48px 20px;
   }
 
