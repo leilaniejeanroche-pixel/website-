@@ -6,8 +6,23 @@ const billTotal = document.querySelector("#billTotal");
 const sessionKey = "spaiStudentSession";
 
 const subjectsByLevel = {
-  default: ["English", "Mathematics", "Science", "Filipino", "Araling Panlipunan", "MAPEH", "Values Education"],
-  senior: ["Oral Communication", "General Mathematics", "Earth and Life Science", "Personal Development", "Physical Education", "Research"]
+  default: [
+    { subject: "English", teacher: "Mrs. Maria Santos" },
+    { subject: "Mathematics", teacher: "Mr. Daniel Cruz" },
+    { subject: "Science", teacher: "Ms. Angelica Reyes" },
+    { subject: "Filipino", teacher: "Mrs. Lorna Garcia" },
+    { subject: "Araling Panlipunan", teacher: "Mr. Paolo Ramos" },
+    { subject: "MAPEH", teacher: "Ms. Clara Mendoza" },
+    { subject: "Values Education", teacher: "Mrs. Elena Flores" }
+  ],
+  senior: [
+    { subject: "Oral Communication", teacher: "Mrs. Maria Santos" },
+    { subject: "General Mathematics", teacher: "Mr. Daniel Cruz" },
+    { subject: "Earth and Life Science", teacher: "Ms. Angelica Reyes" },
+    { subject: "Personal Development", teacher: "Mrs. Elena Flores" },
+    { subject: "Physical Education", teacher: "Ms. Clara Mendoza" },
+    { subject: "Research", teacher: "Mr. Paolo Ramos" }
+  ]
 };
 
 const peso = new Intl.NumberFormat("en-PH", {
@@ -70,7 +85,14 @@ function renderAccount(account) {
   `;
 
   subjectList.innerHTML = subjects
-    .map((subject) => `<div class="subject-item">${escapeHtml(subject)}</div>`)
+    .map(
+      (item) => `
+        <div class="subject-item">
+          <span>${escapeHtml(item.subject)}</span>
+          <small>${escapeHtml(item.teacher)}</small>
+        </div>
+      `
+    )
     .join("");
 
   billList.innerHTML = bills

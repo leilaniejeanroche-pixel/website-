@@ -825,9 +825,9 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 18px;
-  padding: 30px;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
@@ -838,18 +838,19 @@ h2 {
 
 .student-profile h1 {
   color: var(--green-900);
-  font-size: clamp(34px, 6vw, 58px);
+  font-size: clamp(24px, 4vw, 34px);
+  margin-bottom: 8px;
 }
 
 .student-profile p {
   margin-bottom: 0;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .profile-card {
-  min-width: 260px;
-  padding: 18px;
+  min-width: 220px;
+  padding: 14px;
   border-radius: 8px;
   color: var(--white);
   background:
@@ -864,19 +865,19 @@ h2 {
 
 .profile-card strong {
   display: block;
-  margin: 8px 0;
-  font-size: 20px;
+  margin: 6px 0;
+  font-size: 16px;
 }
 
 .student-dashboard {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.75fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 14px;
 }
 
 .subject-panel,
 .bill-panel {
-  padding: 24px;
+  padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--white);
@@ -886,22 +887,34 @@ h2 {
 .subject-list,
 .bill-list {
   display: grid;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .subject-item,
 .bill-item,
 .bill-total {
-  padding: 14px;
+  padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #f8fcf9;
 }
 
 .subject-item {
+  display: grid;
+  grid-template-columns: 1fr minmax(150px, 0.75fr);
+  gap: 10px;
+  align-items: center;
   color: var(--green-900);
+  font-size: 14px;
   font-weight: 800;
+}
+
+.subject-item small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
 }
 
 .bill-item,
@@ -910,6 +923,7 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  font-size: 14px;
 }
 
 .bill-item span,
@@ -918,7 +932,7 @@ h2 {
 }
 
 .bill-total {
-  margin-top: 14px;
+  margin-top: 10px;
   color: var(--white);
   background: linear-gradient(135deg, var(--green-700), var(--green-900));
 }
@@ -928,7 +942,16 @@ h2 {
 }
 
 .bill-total strong {
+  font-size: 17px;
+}
+
+.subject-panel h2,
+.bill-panel h2 {
   font-size: 22px;
+}
+
+.logout-button {
+  margin-top: 12px;
 }
 
 .admin-grid {
