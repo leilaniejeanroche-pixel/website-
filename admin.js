@@ -99,7 +99,7 @@ function renderEditor() {
   if (!student) return;
 
   selectedStudentTitle.textContent = student.studentName;
-  openStudentPage.href = "student.html";
+  openStudentPage.href = "login.html";
 
   editableBillList.innerHTML = (student.bills || [])
     .map(

@@ -1,10 +1,9 @@
 const profile = document.querySelector("#studentProfile");
+const dashboard = document.querySelector("#studentDashboard");
 const subjectList = document.querySelector("#subjectList");
 const billList = document.querySelector("#billList");
 const billTotal = document.querySelector("#billTotal");
-const loginForm = document.querySelector("#studentLoginForm");
-const loginMessage = document.querySelector("#studentLoginMessage");
-const privateContent = document.querySelectorAll(".private-content");
+const sessionKey = "spaiStudentSession";
 
 const subjectsByLevel = {
   default: ["English", "Mathematics", "Science", "Filipino", "Araling Panlipunan", "MAPEH", "Values Education"],
@@ -39,10 +38,16 @@ function getSubjects(gradeLevel) {
   return subjectsByLevel.default;
 }
 
-function showPrivateContent() {
-  privateContent.forEach((section) => {
-    section.hidden = false;
-  });
+function showLoginRequired() {
+  dashboard.hidden = true;
+  profile.innerHTML = `
+    <div>
+      <p class="eyebrow">Login Required</p>
+      <h1>Student dashboard is private</h1>
+      <p>Please sign in first to view your subjects and bill.</p>
+      <a class="contact-button" href="login.html">Go to Student Login</a>
+    </div>
+  `;
 }
 
 function renderAccount(account) {
@@ -52,9 +57,10 @@ function renderAccount(account) {
 
   profile.innerHTML = `
     <div>
-      <p class="eyebrow">Student Account</p>
+      <p class="eyebrow">Student Dashboard</p>
       <h1>${escapeHtml(account.studentName)}</h1>
       <p>${escapeHtml(account.studentId)} | ${escapeHtml(account.gradeLevel)}</p>
+      <button class="small-button logout-button" id="logoutButton" type="button">Log Out</button>
     </div>
     <div class="profile-card">
       <span>Guardian</span>
@@ -79,29 +85,17 @@ function renderAccount(account) {
     .join("");
 
   billTotal.textContent = peso.format(total);
+
+  document.querySelector("#logoutButton").addEventListener("click", () => {
+    sessionStorage.removeItem(sessionKey);
+    window.location.href = "login.html";
+  });
 }
 
-loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+const storedSession = sessionStorage.getItem(sessionKey);
 
-  const formData = new FormData(loginForm);
-  const credentials = Object.fromEntries(formData.entries());
-
-  const response = await fetch("/api/student/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials)
-  });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    loginMessage.textContent = result.error || "Incorrect username or password.";
-    return;
-  }
-
-  loginMessage.textContent = "";
-  loginForm.closest(".login-panel").hidden = true;
-  showPrivateContent();
-  renderAccount(result.student);
-});
+if (!storedSession) {
+  showLoginRequired();
+} else {
+  renderAccount(JSON.parse(storedSession));
+}

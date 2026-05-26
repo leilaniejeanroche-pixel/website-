@@ -30,12 +30,12 @@ function renderCreatedAccount(account) {
         <small>Username</small>
         <span>${escapeHtml(account.username)}</span>
       </div>
-      <a class="small-button" href="student.html">Student Login</a>
+      <a class="small-button" href="login.html">Student Login</a>
     </article>
   `;
 }
 
-accountList.innerHTML = '<p class="empty-message">Created accounts are stored in the backend. Use Admin to view all students.</p>';
+accountList.innerHTML = '<p class="empty-message">Created accounts are stored in the backend. Students sign in on the Student Login page.</p>';
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();

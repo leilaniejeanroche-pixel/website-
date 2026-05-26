@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Account | Saint Patrick's Academy, Inc.</title>
+  <title>Student Dashboard | Saint Patrick's Academy, Inc.</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="portal-page">
@@ -13,39 +13,19 @@
       <span>Saint Patrick's Academy, Inc.</span>
     </a>
 
-    <nav aria-label="Student account navigation">
+    <nav aria-label="Student dashboard navigation">
       <a href="index.html">Home</a>
       <a href="events.html">Events</a>
       <a href="announcements.html">Announcements</a>
-      <a href="portal.html">Student Portal</a>
-      <a href="#studentLogin">Login</a>
+      <a href="portal.html">Create Account</a>
+      <a href="login.html">Student Login</a>
     </nav>
   </header>
 
   <main class="portal-main">
-    <section class="login-panel" id="studentLogin">
-      <form class="login-form" id="studentLoginForm">
-        <div>
-          <p class="eyebrow">Private Student Login</p>
-          <h1>Open Your Account</h1>
-          <p>Enter your own portal username and password to view your subjects and bill.</p>
-        </div>
-        <label>
-          Username
-          <input name="username" type="text" placeholder="student.username" required>
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" placeholder="Student password" required>
-        </label>
-        <button class="contact-button" type="submit">Login</button>
-        <p class="form-note" id="studentLoginMessage"></p>
-      </form>
-    </section>
+    <section class="student-profile" id="studentProfile"></section>
 
-    <section class="student-profile private-content" id="studentProfile" hidden></section>
-
-    <section class="student-dashboard private-content" hidden>
+    <section class="student-dashboard" id="studentDashboard">
       <article class="subject-panel">
         <div>
           <p class="eyebrow">Class List</p>

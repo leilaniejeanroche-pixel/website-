@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login | Saint Patrick's Academy, Inc.</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="portal-page">
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Saint Patrick's Academy, Inc.">
+      <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
+      <span>Saint Patrick's Academy, Inc.</span>
+    </a>
+
+    <nav aria-label="Student login navigation">
+      <a href="index.html">Home</a>
+      <a href="portal.html">Create Account</a>
+      <a href="events.html">Events</a>
+      <a href="announcements.html">Announcements</a>
+    </nav>
+  </header>
+
+  <main class="portal-main">
+    <section class="login-panel">
+      <form class="login-form" id="studentLoginForm">
+        <div>
+          <p class="eyebrow">Student Sign In</p>
+          <h1>Login to Your Account</h1>
+          <p>Use the username and password created for your student portal account.</p>
+        </div>
+        <label>
+          Username
+          <input name="username" type="text" placeholder="student.username" required>
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" placeholder="Student password" required>
+        </label>
+        <button class="contact-button" type="submit">Sign In</button>
+        <p class="form-note" id="studentLoginMessage"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="login.js"></script>
+</body>
+</html>
