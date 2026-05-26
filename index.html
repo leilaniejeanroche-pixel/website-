@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header home-header">
     <a class="brand" href="#" aria-label="Saint Patrick's Academy, Inc.">
       <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
       <span>Saint Patrick's Academy, Inc.</span>
@@ -19,24 +19,54 @@
       <a href="events.html">Events</a>
       <a href="announcements.html">Announcements</a>
       <a href="#contact">Contact</a>
-      <a href="portal.html">Student Portal</a>
-      <a href="login.html">Student Login</a>
+      <a class="nav-pill" href="login.html">Student Login</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero" id="about">
-      <div class="hero-content">
-        <img class="school-logo" src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
-        <p class="eyebrow">Dingalan, Aurora</p>
+    <section class="hero school-hero" id="about">
+      <div class="hero-content school-hero-content">
+        <div class="hero-school-mark">
+          <img class="school-logo" src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
+          <div>
+            <p class="eyebrow">Dingalan, Aurora</p>
+            <span>Faith, Excellence, and Service</span>
+          </div>
+        </div>
         <h1>Saint Patrick's Academy, Inc.</h1>
         <p>
-          Saint Patrick's Academy, Inc. is a school community dedicated to guiding learners
-          through quality education, discipline, faith, and service. Set in a peaceful green
-          campus, the school provides a welcoming place where students can grow in knowledge,
-          character, and confidence.
+          A welcoming Catholic school community where learners grow in knowledge,
+          character, discipline, and service.
         </p>
+        <div class="hero-actions">
+          <a class="contact-button" href="portal.html">Create Student Account</a>
+          <a class="ghost-button" href="login.html">Student Login</a>
+        </div>
       </div>
+
+      <div class="hero-info-card">
+        <strong>School Portal</strong>
+        <p>Access student accounts, school announcements, events, subjects, and billing information.</p>
+        <div>
+          <a href="announcements.html">View Announcements</a>
+          <a href="events.html">View Events</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="school-info-strip" aria-label="School highlights">
+      <article>
+        <strong>Private School</strong>
+        <span>Serving learners in Dingalan, Aurora</span>
+      </article>
+      <article>
+        <strong>Student Portal</strong>
+        <span>Accounts, subjects, and billing</span>
+      </article>
+      <article>
+        <strong>Campus Life</strong>
+        <span>Peaceful green learning environment</span>
+      </article>
     </section>
 
     <section class="intro-section" id="values">
@@ -88,11 +118,14 @@
 
     <section class="contact-section" id="contact">
       <div>
-        <p class="eyebrow">Visit Us</p>
+        <p class="eyebrow">School Portal</p>
         <h2>Saint Patrick's Academy, Inc.</h2>
-        <p>Dingalan, Aurora</p>
+        <p>Create an account or sign in to access student information.</p>
       </div>
-      <a class="contact-button" href="portal.html">Create Student Account</a>
+      <div class="contact-actions">
+        <a class="contact-button" href="portal.html">Create Student Account</a>
+        <a class="ghost-button green" href="login.html">Student Login</a>
+      </div>
     </section>
   </main>
 </body>

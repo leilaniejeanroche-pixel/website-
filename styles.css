@@ -75,6 +75,16 @@ body {
   font-weight: 700;
 }
 
+.site-header nav a.nav-pill {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--green-700);
+}
+
 .hero {
   min-height: 100vh;
   display: grid;
@@ -88,6 +98,36 @@ body {
 .hero-content {
   max-width: 760px;
   color: var(--white);
+}
+
+.school-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  gap: 36px;
+  align-items: end;
+  padding-bottom: 96px;
+  background:
+    linear-gradient(90deg, rgba(8, 45, 31, 0.92) 0%, rgba(15, 61, 46, 0.72) 48%, rgba(15, 61, 46, 0.18) 100%),
+    url("assets/bg.jpg") center / cover;
+}
+
+.school-hero-content {
+  max-width: 900px;
+}
+
+.hero-school-mark {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.hero-school-mark .eyebrow {
+  margin-bottom: 4px;
+}
+
+.hero-school-mark span {
+  color: #eef8f1;
+  font-weight: 800;
 }
 
 .school-logo {
@@ -138,6 +178,100 @@ h2 {
 .hero p {
   max-width: 760px;
   color: #eef8f1;
+}
+
+.hero-actions,
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.ghost-button {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.ghost-button.green {
+  border-color: var(--green-700);
+  color: var(--green-700);
+  background: #ffffff;
+}
+
+.hero-info-card {
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+}
+
+.hero-info-card strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.hero-info-card p {
+  color: #eef8f1;
+  line-height: 1.6;
+}
+
+.hero-info-card div {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.hero-info-card a {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: var(--green-900);
+  background: #ffffff;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.school-info-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+}
+
+.school-info-strip article {
+  padding: 24px 6vw;
+  background: #ffffff;
+}
+
+.school-info-strip strong,
+.school-info-strip span {
+  display: block;
+}
+
+.school-info-strip strong {
+  color: var(--green-900);
+  font-size: 18px;
+}
+
+.school-info-strip span {
+  margin-top: 6px;
+  color: var(--muted);
 }
 
 .intro-section {
@@ -836,6 +970,8 @@ h2 {
   .intro-section,
   .values-grid,
   .campus-section,
+  .school-hero,
+  .school-info-strip,
   .portal-grid,
   .account-form,
   .account-item,
@@ -877,6 +1013,19 @@ h2 {
   .hero {
     min-height: auto;
     padding: 48px 20px;
+  }
+
+  .school-hero {
+    padding: 48px 20px;
+  }
+
+  .hero-school-mark {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .school-info-strip article {
+    padding: 20px;
   }
 
   .intro-section {
