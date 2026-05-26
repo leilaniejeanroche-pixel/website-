@@ -1024,6 +1024,108 @@ h2 {
   background: var(--green-700);
 }
 
+.billing-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.42fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.billing-search {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+  color: var(--green-900);
+  font-weight: 800;
+}
+
+.billing-search input {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.billing-student-list .admin-student-button {
+  display: grid;
+  gap: 4px;
+}
+
+.billing-student-list small {
+  color: var(--green-700);
+  font-weight: 800;
+}
+
+.billing-student-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.billing-student-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.billing-total-card {
+  padding: 16px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--green-700), var(--green-900));
+}
+
+.billing-total-card span,
+.billing-total-card strong {
+  display: block;
+}
+
+.billing-total-card span {
+  color: #d8f0e2;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.billing-total-card strong {
+  margin-top: 8px;
+  font-size: 24px;
+}
+
+.billing-table {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.billing-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px auto;
+  gap: 12px;
+  align-items: end;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fcf9;
+}
+
+.billing-row label {
+  display: grid;
+  gap: 8px;
+  color: var(--green-900);
+  font-weight: 800;
+}
+
+.billing-row input {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
 .admin-panel {
   padding: 24px;
   border: 1px solid var(--line);
@@ -1451,6 +1553,9 @@ h2 {
   .admin-summary,
   .admin-tools,
   .admin-grid,
+  .billing-layout,
+  .billing-student-header,
+  .billing-row,
   .content-editor,
   .bill-editor-form,
   .editable-bill-item,

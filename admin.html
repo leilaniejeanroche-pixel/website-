@@ -18,7 +18,7 @@
       <a href="events.html">Events</a>
       <a href="announcements.html">Announcements</a>
       <a href="portal.html">Student Portal</a>
-      <a href="#bill-editor">Bill Editor</a>
+      <a href="billing-admin.html">Student Billing</a>
       <a href="#content-editor">Content Editor</a>
     </nav>
   </header>
@@ -72,50 +72,12 @@
     </section>
 
     <section class="admin-tools" aria-label="Admin quick tools">
-      <a href="#bill-editor">Student Billing</a>
+      <a href="billing-admin.html">Student Billing</a>
       <a href="#content-editor">Events & Announcements</a>
       <a href="#forms-editor">Digital Forms</a>
       <a href="events.html">View Events Page</a>
       <a href="announcements.html">View Announcements</a>
       <a href="forms.html">View Forms Page</a>
-    </section>
-
-    <section class="admin-grid" id="bill-editor">
-      <aside class="admin-panel">
-        <div>
-          <p class="eyebrow">Students</p>
-          <h2>Select Account</h2>
-        </div>
-        <div class="admin-student-list" id="adminStudentList"></div>
-      </aside>
-
-      <section class="admin-panel">
-        <div class="admin-editor-heading">
-          <div>
-            <p class="eyebrow">Billing</p>
-            <h2 id="selectedStudentTitle">Choose a student</h2>
-          </div>
-          <a class="small-button" id="openStudentPage" href="portal.html">Open Student Page</a>
-        </div>
-
-        <form class="bill-editor-form" id="billForm">
-          <label>
-            Bill name
-            <input name="billName" type="text" placeholder="Example: Tuition Fee" required>
-          </label>
-          <label>
-            Amount in pesos
-            <input name="billAmount" type="number" min="0" step="1" placeholder="0" required>
-          </label>
-          <button class="contact-button" type="submit">Add Bill</button>
-        </form>
-
-        <div class="editable-bill-list" id="editableBillList"></div>
-        <div class="bill-total admin-total">
-          <span>Total Balance</span>
-          <strong id="adminBillTotal">PHP 0</strong>
-        </div>
-      </section>
     </section>
 
     <section class="content-editor" id="content-editor">

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Billing Admin | Saint Patrick's Academy, Inc.</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="portal-page">
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Saint Patrick's Academy, Inc.">
+      <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
+      <span>Saint Patrick's Academy, Inc.</span>
+    </a>
+
+    <nav aria-label="Billing admin navigation">
+      <a href="admin.html">Admin Dashboard</a>
+      <a href="portal.html">Student Portal</a>
+      <a href="login.html">Student Login</a>
+    </nav>
+  </header>
+
+  <main class="portal-main">
+    <section class="login-panel" id="billingLogin">
+      <form class="login-form" id="billingLoginForm">
+        <div>
+          <p class="eyebrow">Admin Password</p>
+          <h1>Student Billing</h1>
+          <p>Enter the admin password to manage student bills.</p>
+        </div>
+        <label>
+          Password
+          <input name="adminPassword" type="password" placeholder="Admin password" required>
+        </label>
+        <button class="contact-button" type="submit">Open Billing Manager</button>
+        <p class="form-note" id="billingLoginMessage"></p>
+      </form>
+    </section>
+
+    <section class="portal-hero billing-private">
+      <div>
+        <p class="eyebrow">Billing Manager</p>
+        <h1>Student Bills</h1>
+        <p>Select a student, review balance, add bill items, and update amounts in pesos.</p>
+      </div>
+      <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
+    </section>
+
+    <section class="billing-layout billing-private">
+      <aside class="admin-panel billing-students-panel">
+        <div>
+          <p class="eyebrow">Students</p>
+          <h2>Accounts</h2>
+        </div>
+        <label class="billing-search">
+          Search
+          <input id="billingSearch" type="search" placeholder="Search name, ID, or grade">
+        </label>
+        <div class="admin-student-list billing-student-list" id="billingStudentList"></div>
+      </aside>
+
+      <section class="admin-panel billing-editor-panel">
+        <div class="billing-student-header">
+          <div>
+            <p class="eyebrow">Selected Student</p>
+            <h2 id="billingStudentTitle">Choose a student</h2>
+            <p id="billingStudentMeta">No account selected.</p>
+          </div>
+          <div class="billing-total-card">
+            <span>Total Balance</span>
+            <strong id="billingTotal">PHP 0</strong>
+          </div>
+        </div>
+
+        <form class="bill-editor-form billing-add-form" id="billingForm">
+          <label>
+            Bill name
+            <input name="billName" type="text" placeholder="Example: Tuition Fee" required>
+          </label>
+          <label>
+            Amount in pesos
+            <input name="billAmount" type="number" min="0" step="1" placeholder="0" required>
+          </label>
+          <button class="contact-button" type="submit">Add Bill</button>
+        </form>
+
+        <div class="billing-table" id="billingList"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="billing-admin.js"></script>
+</body>
+</html>
