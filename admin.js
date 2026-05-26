@@ -2,7 +2,7 @@ const studentList = document.querySelector("#adminStudentList");
 const adminLogin = document.querySelector("#adminLogin");
 const adminLoginForm = document.querySelector("#adminLoginForm");
 const adminLoginMessage = document.querySelector("#adminLoginMessage");
-const adminSections = document.querySelectorAll(".portal-hero, .admin-grid, .content-editor");
+const adminSections = document.querySelectorAll(".portal-hero, .admin-summary, .admin-tools, .admin-grid, .content-editor");
 const selectedStudentTitle = document.querySelector("#selectedStudentTitle");
 const openStudentPage = document.querySelector("#openStudentPage");
 const billForm = document.querySelector("#billForm");
@@ -10,8 +10,14 @@ const editableBillList = document.querySelector("#editableBillList");
 const adminBillTotal = document.querySelector("#adminBillTotal");
 const eventForm = document.querySelector("#eventForm");
 const announcementForm = document.querySelector("#announcementForm");
+const digitalFormForm = document.querySelector("#digitalFormForm");
 const adminEventsList = document.querySelector("#adminEventsList");
 const adminAnnouncementsList = document.querySelector("#adminAnnouncementsList");
+const adminFormsList = document.querySelector("#adminFormsList");
+const studentCount = document.querySelector("#studentCount");
+const eventCount = document.querySelector("#eventCount");
+const announcementCount = document.querySelector("#announcementCount");
+const formCount = document.querySelector("#formCount");
 
 const peso = new Intl.NumberFormat("en-PH", {
   style: "currency",
@@ -24,6 +30,7 @@ let adminPassword = "";
 let students = [];
 let events = [];
 let announcements = [];
+let digitalForms = [];
 
 function setAdminVisible(isVisible) {
   adminSections.forEach((section) => {
@@ -70,15 +77,26 @@ async function loadStudents() {
 }
 
 async function loadContent() {
-  const [eventsResult, announcementsResult] = await Promise.all([
+  const [eventsResult, announcementsResult, formsResult] = await Promise.all([
     api("/api/admin/events"),
-    api("/api/admin/announcements")
+    api("/api/admin/announcements"),
+    api("/api/admin/forms")
   ]);
 
   events = eventsResult.events;
   announcements = announcementsResult.announcements;
+  digitalForms = formsResult.forms;
   renderEventsEditor();
   renderAnnouncementsEditor();
+  renderFormsEditor();
+  renderSummary();
+}
+
+function renderSummary() {
+  studentCount.textContent = students.length;
+  eventCount.textContent = events.length;
+  announcementCount.textContent = announcements.length;
+  formCount.textContent = digitalForms.length;
 }
 
 function renderStudents() {
@@ -109,6 +127,7 @@ function renderStudents() {
 
   billForm.hidden = false;
   renderEditor();
+  renderSummary();
 }
 
 function renderEditor() {
@@ -201,6 +220,35 @@ function renderAnnouncementsEditor() {
             Important
           </label>
           <button class="danger-button" type="button" data-remove-announcement="${announcement.id}">Remove</button>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function renderFormsEditor() {
+  if (digitalForms.length === 0) {
+    adminFormsList.innerHTML = '<p class="empty-message">No digital forms yet. Add the first form above.</p>';
+    return;
+  }
+
+  adminFormsList.innerHTML = digitalForms
+    .map(
+      (form) => `
+        <div class="content-editor-item">
+          <label>
+            Form title
+            <input data-form-id="${form.id}" data-field="title" value="${escapeHtml(form.title)}">
+          </label>
+          <label>
+            Description
+            <textarea data-form-id="${form.id}" data-field="description">${escapeHtml(form.description)}</textarea>
+          </label>
+          <label>
+            Button label
+            <input data-form-id="${form.id}" data-field="buttonLabel" value="${escapeHtml(form.buttonLabel)}">
+          </label>
+          <button class="danger-button" type="button" data-remove-form="${form.id}">Remove</button>
         </div>
       `
     )
@@ -350,6 +398,48 @@ adminAnnouncementsList.addEventListener("click", async (event) => {
   if (!button) return;
 
   await api(`/api/admin/announcements/${button.dataset.removeAnnouncement}`, {
+    method: "DELETE"
+  });
+
+  await loadContent();
+});
+
+digitalFormForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(digitalFormForm);
+  await api("/api/admin/forms", {
+    method: "POST",
+    body: JSON.stringify(Object.fromEntries(formData.entries()))
+  });
+
+  digitalFormForm.reset();
+  await loadContent();
+});
+
+adminFormsList.addEventListener("change", async (event) => {
+  const input = event.target;
+  if (!input.dataset.field) return;
+
+  const currentForm = digitalForms.find((item) => String(item.id) === String(input.dataset.formId));
+  const nextForm = {
+    ...currentForm,
+    [input.dataset.field]: input.value
+  };
+
+  await api(`/api/admin/forms/${input.dataset.formId}`, {
+    method: "PUT",
+    body: JSON.stringify(nextForm)
+  });
+
+  await loadContent();
+});
+
+adminFormsList.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-remove-form]");
+  if (!button) return;
+
+  await api(`/api/admin/forms/${button.dataset.removeForm}`, {
     method: "DELETE"
   });
 

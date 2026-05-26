@@ -119,6 +119,11 @@ async function handleApi(req, res) {
     return;
   }
 
+  if (req.method === "GET" && url.pathname === "/api/forms") {
+    sendJson(res, 200, { forms: await database.listDigitalForms() });
+    return;
+  }
+
   if (req.method === "POST" && url.pathname === "/api/students") {
     const body = await readBody(req);
     const requiredFields = ["studentName", "studentId", "gradeLevel", "guardianName", "guardianContact", "username", "password"];
@@ -263,6 +268,50 @@ async function handleApi(req, res) {
       sendJson(res, 200, {
         announcements: await database.removeAnnouncement(Number(announcementMatch[1]))
       });
+      return;
+    }
+  }
+
+  if (url.pathname === "/api/admin/forms") {
+    if (!requireAdmin(req, res)) return;
+
+    if (req.method === "GET") {
+      sendJson(res, 200, { forms: await database.listDigitalForms() });
+      return;
+    }
+
+    if (req.method === "POST") {
+      const body = await readBody(req);
+      sendJson(res, 200, {
+        forms: await database.addDigitalForm({
+          title: body.title || "New Form",
+          description: body.description || "Form details will be posted soon.",
+          buttonLabel: body.buttonLabel || "Open Form"
+        })
+      });
+      return;
+    }
+  }
+
+  const formMatch = url.pathname.match(/^\/api\/admin\/forms\/(\d+)$/);
+
+  if (formMatch) {
+    if (!requireAdmin(req, res)) return;
+
+    if (req.method === "PUT") {
+      const body = await readBody(req);
+      sendJson(res, 200, {
+        forms: await database.updateDigitalForm(Number(formMatch[1]), {
+          title: body.title || "Form",
+          description: body.description || "",
+          buttonLabel: body.buttonLabel || "Open Form"
+        })
+      });
+      return;
+    }
+
+    if (req.method === "DELETE") {
+      sendJson(res, 200, { forms: await database.removeDigitalForm(Number(formMatch[1])) });
       return;
     }
   }

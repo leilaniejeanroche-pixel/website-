@@ -65,6 +65,14 @@ const sqliteSchema = `
     important INTEGER NOT NULL DEFAULT 0,
     position INTEGER NOT NULL DEFAULT 0
   );
+
+  CREATE TABLE IF NOT EXISTS digital_forms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    button_label TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0
+  );
 `;
 
 const postgresSchema = `
@@ -103,6 +111,14 @@ const postgresSchema = `
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     important INTEGER NOT NULL DEFAULT 0,
+    position INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS digital_forms (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    button_label TEXT NOT NULL,
     position INTEGER NOT NULL DEFAULT 0
   );
 `;
@@ -148,6 +164,15 @@ function rowToAnnouncement(row) {
     title: row.title,
     description: row.description,
     important: Boolean(row.important)
+  };
+}
+
+function rowToDigitalForm(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    buttonLabel: row.button_label
   };
 }
 
@@ -484,9 +509,65 @@ async function removeAnnouncement(id) {
   return listAnnouncements();
 }
 
+async function listDigitalForms() {
+  if (usePostgres) {
+    const result = await pgPool.query("SELECT * FROM digital_forms ORDER BY position, id");
+    return result.rows.map(rowToDigitalForm);
+  }
+
+  return sqliteDb.prepare("SELECT * FROM digital_forms ORDER BY position, id").all().map(rowToDigitalForm);
+}
+
+async function addDigitalForm(form) {
+  if (usePostgres) {
+    const positionResult = await pgPool.query(
+      "SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM digital_forms"
+    );
+    await pgPool.query(
+      "INSERT INTO digital_forms (title, description, button_label, position) VALUES ($1, $2, $3, $4)",
+      [form.title, form.description, form.buttonLabel, positionResult.rows[0].next_position || 0]
+    );
+    return listDigitalForms();
+  }
+
+  const nextPosition = sqliteDb
+    .prepare("SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM digital_forms")
+    .get().next_position;
+  sqliteDb
+    .prepare("INSERT INTO digital_forms (title, description, button_label, position) VALUES (?, ?, ?, ?)")
+    .run(form.title, form.description, form.buttonLabel, nextPosition || 0);
+  return listDigitalForms();
+}
+
+async function updateDigitalForm(id, form) {
+  if (usePostgres) {
+    await pgPool.query(
+      "UPDATE digital_forms SET title = $1, description = $2, button_label = $3 WHERE id = $4",
+      [form.title, form.description, form.buttonLabel, id]
+    );
+    return listDigitalForms();
+  }
+
+  sqliteDb
+    .prepare("UPDATE digital_forms SET title = ?, description = ?, button_label = ? WHERE id = ?")
+    .run(form.title, form.description, form.buttonLabel, id);
+  return listDigitalForms();
+}
+
+async function removeDigitalForm(id) {
+  if (usePostgres) {
+    await pgPool.query("DELETE FROM digital_forms WHERE id = $1", [id]);
+    return listDigitalForms();
+  }
+
+  sqliteDb.prepare("DELETE FROM digital_forms WHERE id = ?").run(id);
+  return listDigitalForms();
+}
+
 module.exports = {
   addAnnouncement,
   addBill,
+  addDigitalForm,
   addEvent,
   createStudent,
   findStudentByLogin,
@@ -495,11 +576,14 @@ module.exports = {
   getStudentById,
   init,
   listAnnouncements,
+  listDigitalForms,
   listEvents,
   removeAnnouncement,
   removeBill,
+  removeDigitalForm,
   removeEvent,
   updateAnnouncement,
   updateBill,
+  updateDigitalForm,
   updateEvent
 };

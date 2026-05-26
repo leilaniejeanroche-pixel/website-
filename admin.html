@@ -45,11 +45,39 @@
         <p class="eyebrow">Admin Only</p>
         <h1>Website Controller</h1>
         <p>
-          Select a student account, add bill items, update amounts in pesos,
-          and save the billing list shown on that student's portal page.
+          Manage student accounts, billing, school announcements, events,
+          and digital forms from one organized dashboard.
         </p>
       </div>
       <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
+    </section>
+
+    <section class="admin-summary" aria-label="Admin dashboard summary">
+      <article>
+        <span>Students</span>
+        <strong id="studentCount">0</strong>
+      </article>
+      <article>
+        <span>Events</span>
+        <strong id="eventCount">0</strong>
+      </article>
+      <article>
+        <span>Announcements</span>
+        <strong id="announcementCount">0</strong>
+      </article>
+      <article>
+        <span>Digital Forms</span>
+        <strong id="formCount">0</strong>
+      </article>
+    </section>
+
+    <section class="admin-tools" aria-label="Admin quick tools">
+      <a href="#bill-editor">Student Billing</a>
+      <a href="#content-editor">Events & Announcements</a>
+      <a href="#forms-editor">Digital Forms</a>
+      <a href="events.html">View Events Page</a>
+      <a href="announcements.html">View Announcements</a>
+      <a href="forms.html">View Forms Page</a>
     </section>
 
     <section class="admin-grid" id="bill-editor">
@@ -147,6 +175,33 @@
         </form>
 
         <div class="content-list" id="adminAnnouncementsList"></div>
+      </section>
+    </section>
+
+    <section class="content-editor forms-editor" id="forms-editor">
+      <section class="admin-panel">
+        <div>
+          <p class="eyebrow">Digital Forms</p>
+          <h2>Edit Forms Page</h2>
+        </div>
+
+        <form class="content-form" id="digitalFormForm">
+          <label>
+            Form title
+            <input name="title" type="text" placeholder="Enrollment Request" required>
+          </label>
+          <label>
+            Description
+            <textarea name="description" placeholder="What is this form for?" required></textarea>
+          </label>
+          <label>
+            Button label
+            <input name="buttonLabel" type="text" placeholder="Submit Form" required>
+          </label>
+          <button class="contact-button" type="submit">Add Digital Form</button>
+        </form>
+
+        <div class="content-list" id="adminFormsList"></div>
       </section>
     </section>
   </main>
