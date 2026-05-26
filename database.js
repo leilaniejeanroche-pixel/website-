@@ -47,6 +47,24 @@ const sqliteSchema = `
     position INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (student_id_ref) REFERENCES students(id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_date TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS announcements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    important INTEGER NOT NULL DEFAULT 0,
+    position INTEGER NOT NULL DEFAULT 0
+  );
 `;
 
 const postgresSchema = `
@@ -67,6 +85,24 @@ const postgresSchema = `
     student_id_ref TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     label TEXT NOT NULL,
     amount NUMERIC NOT NULL DEFAULT 0,
+    position INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS events (
+    id SERIAL PRIMARY KEY,
+    event_date TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS announcements (
+    id SERIAL PRIMARY KEY,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    important INTEGER NOT NULL DEFAULT 0,
     position INTEGER NOT NULL DEFAULT 0
   );
 `;
@@ -92,6 +128,26 @@ function rowToBill(row) {
     id: row.id,
     label: row.label,
     amount: Number(row.amount) || 0
+  };
+}
+
+function rowToEvent(row) {
+  return {
+    id: row.id,
+    eventDate: row.event_date,
+    category: row.category,
+    title: row.title,
+    description: row.description
+  };
+}
+
+function rowToAnnouncement(row) {
+  return {
+    id: row.id,
+    category: row.category,
+    title: row.title,
+    description: row.description,
+    important: Boolean(row.important)
   };
 }
 
@@ -306,14 +362,144 @@ async function removeBill(studentId, billId) {
   return getStudentById(studentId);
 }
 
+async function listEvents() {
+  if (usePostgres) {
+    const result = await pgPool.query("SELECT * FROM events ORDER BY position, id");
+    return result.rows.map(rowToEvent);
+  }
+
+  return sqliteDb.prepare("SELECT * FROM events ORDER BY position, id").all().map(rowToEvent);
+}
+
+async function addEvent(event) {
+  if (usePostgres) {
+    const positionResult = await pgPool.query("SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM events");
+    await pgPool.query(
+      "INSERT INTO events (event_date, category, title, description, position) VALUES ($1, $2, $3, $4, $5)",
+      [event.eventDate, event.category, event.title, event.description, positionResult.rows[0].next_position || 0]
+    );
+    return listEvents();
+  }
+
+  const nextPosition = sqliteDb.prepare("SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM events").get()
+    .next_position;
+  sqliteDb
+    .prepare("INSERT INTO events (event_date, category, title, description, position) VALUES (?, ?, ?, ?, ?)")
+    .run(event.eventDate, event.category, event.title, event.description, nextPosition || 0);
+  return listEvents();
+}
+
+async function updateEvent(id, event) {
+  if (usePostgres) {
+    await pgPool.query("UPDATE events SET event_date = $1, category = $2, title = $3, description = $4 WHERE id = $5", [
+      event.eventDate,
+      event.category,
+      event.title,
+      event.description,
+      id
+    ]);
+    return listEvents();
+  }
+
+  sqliteDb
+    .prepare("UPDATE events SET event_date = ?, category = ?, title = ?, description = ? WHERE id = ?")
+    .run(event.eventDate, event.category, event.title, event.description, id);
+  return listEvents();
+}
+
+async function removeEvent(id) {
+  if (usePostgres) {
+    await pgPool.query("DELETE FROM events WHERE id = $1", [id]);
+    return listEvents();
+  }
+
+  sqliteDb.prepare("DELETE FROM events WHERE id = ?").run(id);
+  return listEvents();
+}
+
+async function listAnnouncements() {
+  if (usePostgres) {
+    const result = await pgPool.query("SELECT * FROM announcements ORDER BY position, id");
+    return result.rows.map(rowToAnnouncement);
+  }
+
+  return sqliteDb.prepare("SELECT * FROM announcements ORDER BY position, id").all().map(rowToAnnouncement);
+}
+
+async function addAnnouncement(announcement) {
+  if (usePostgres) {
+    const positionResult = await pgPool.query(
+      "SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM announcements"
+    );
+    await pgPool.query(
+      "INSERT INTO announcements (category, title, description, important, position) VALUES ($1, $2, $3, $4, $5)",
+      [
+        announcement.category,
+        announcement.title,
+        announcement.description,
+        announcement.important ? 1 : 0,
+        positionResult.rows[0].next_position || 0
+      ]
+    );
+    return listAnnouncements();
+  }
+
+  const nextPosition = sqliteDb
+    .prepare("SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM announcements")
+    .get().next_position;
+  sqliteDb
+    .prepare("INSERT INTO announcements (category, title, description, important, position) VALUES (?, ?, ?, ?, ?)")
+    .run(
+      announcement.category,
+      announcement.title,
+      announcement.description,
+      announcement.important ? 1 : 0,
+      nextPosition || 0
+    );
+  return listAnnouncements();
+}
+
+async function updateAnnouncement(id, announcement) {
+  if (usePostgres) {
+    await pgPool.query(
+      "UPDATE announcements SET category = $1, title = $2, description = $3, important = $4 WHERE id = $5",
+      [announcement.category, announcement.title, announcement.description, announcement.important ? 1 : 0, id]
+    );
+    return listAnnouncements();
+  }
+
+  sqliteDb
+    .prepare("UPDATE announcements SET category = ?, title = ?, description = ?, important = ? WHERE id = ?")
+    .run(announcement.category, announcement.title, announcement.description, announcement.important ? 1 : 0, id);
+  return listAnnouncements();
+}
+
+async function removeAnnouncement(id) {
+  if (usePostgres) {
+    await pgPool.query("DELETE FROM announcements WHERE id = $1", [id]);
+    return listAnnouncements();
+  }
+
+  sqliteDb.prepare("DELETE FROM announcements WHERE id = ?").run(id);
+  return listAnnouncements();
+}
+
 module.exports = {
+  addAnnouncement,
   addBill,
+  addEvent,
   createStudent,
   findStudentByLogin,
   findStudentByUsername,
   getAllStudents,
   getStudentById,
   init,
+  listAnnouncements,
+  listEvents,
+  removeAnnouncement,
   removeBill,
-  updateBill
+  removeEvent,
+  updateAnnouncement,
+  updateBill,
+  updateEvent
 };

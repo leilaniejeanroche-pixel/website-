@@ -2,12 +2,16 @@ const studentList = document.querySelector("#adminStudentList");
 const adminLogin = document.querySelector("#adminLogin");
 const adminLoginForm = document.querySelector("#adminLoginForm");
 const adminLoginMessage = document.querySelector("#adminLoginMessage");
-const adminSections = document.querySelectorAll(".portal-hero, .admin-grid");
+const adminSections = document.querySelectorAll(".portal-hero, .admin-grid, .content-editor");
 const selectedStudentTitle = document.querySelector("#selectedStudentTitle");
 const openStudentPage = document.querySelector("#openStudentPage");
 const billForm = document.querySelector("#billForm");
 const editableBillList = document.querySelector("#editableBillList");
 const adminBillTotal = document.querySelector("#adminBillTotal");
+const eventForm = document.querySelector("#eventForm");
+const announcementForm = document.querySelector("#announcementForm");
+const adminEventsList = document.querySelector("#adminEventsList");
+const adminAnnouncementsList = document.querySelector("#adminAnnouncementsList");
 
 const peso = new Intl.NumberFormat("en-PH", {
   style: "currency",
@@ -18,6 +22,8 @@ const peso = new Intl.NumberFormat("en-PH", {
 let selectedIndex = 0;
 let adminPassword = "";
 let students = [];
+let events = [];
+let announcements = [];
 
 function setAdminVisible(isVisible) {
   adminSections.forEach((section) => {
@@ -61,6 +67,18 @@ async function loadStudents() {
   const result = await api("/api/admin/students");
   students = result.students;
   renderStudents();
+}
+
+async function loadContent() {
+  const [eventsResult, announcementsResult] = await Promise.all([
+    api("/api/admin/events"),
+    api("/api/admin/announcements")
+  ]);
+
+  events = eventsResult.events;
+  announcements = announcementsResult.announcements;
+  renderEventsEditor();
+  renderAnnouncementsEditor();
 }
 
 function renderStudents() {
@@ -123,6 +141,72 @@ function renderEditor() {
   adminBillTotal.textContent = peso.format(total);
 }
 
+function renderEventsEditor() {
+  if (events.length === 0) {
+    adminEventsList.innerHTML = '<p class="empty-message">No events yet. Add the first school event above.</p>';
+    return;
+  }
+
+  adminEventsList.innerHTML = events
+    .map(
+      (event) => `
+        <div class="content-editor-item">
+          <label>
+            Date
+            <input data-event-id="${event.id}" data-field="eventDate" value="${escapeHtml(event.eventDate)}">
+          </label>
+          <label>
+            Category
+            <input data-event-id="${event.id}" data-field="category" value="${escapeHtml(event.category)}">
+          </label>
+          <label>
+            Title
+            <input data-event-id="${event.id}" data-field="title" value="${escapeHtml(event.title)}">
+          </label>
+          <label>
+            Description
+            <textarea data-event-id="${event.id}" data-field="description">${escapeHtml(event.description)}</textarea>
+          </label>
+          <button class="danger-button" type="button" data-remove-event="${event.id}">Remove</button>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function renderAnnouncementsEditor() {
+  if (announcements.length === 0) {
+    adminAnnouncementsList.innerHTML = '<p class="empty-message">No announcements yet. Add the first announcement above.</p>';
+    return;
+  }
+
+  adminAnnouncementsList.innerHTML = announcements
+    .map(
+      (announcement) => `
+        <div class="content-editor-item">
+          <label>
+            Category
+            <input data-announcement-id="${announcement.id}" data-field="category" value="${escapeHtml(announcement.category)}">
+          </label>
+          <label>
+            Title
+            <input data-announcement-id="${announcement.id}" data-field="title" value="${escapeHtml(announcement.title)}">
+          </label>
+          <label>
+            Description
+            <textarea data-announcement-id="${announcement.id}" data-field="description">${escapeHtml(announcement.description)}</textarea>
+          </label>
+          <label class="checkbox-label">
+            <input data-announcement-id="${announcement.id}" data-field="important" type="checkbox" ${announcement.important ? "checked" : ""}>
+            Important
+          </label>
+          <button class="danger-button" type="button" data-remove-announcement="${announcement.id}">Remove</button>
+        </div>
+      `
+    )
+    .join("");
+}
+
 studentList.addEventListener("click", (event) => {
   const button = event.target.closest("[data-index]");
   if (!button) return;
@@ -183,6 +267,95 @@ editableBillList.addEventListener("click", async (event) => {
   await loadStudents();
 });
 
+eventForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(eventForm);
+  await api("/api/admin/events", {
+    method: "POST",
+    body: JSON.stringify(Object.fromEntries(formData.entries()))
+  });
+
+  eventForm.reset();
+  await loadContent();
+});
+
+adminEventsList.addEventListener("change", async (event) => {
+  const input = event.target;
+  if (!input.dataset.field) return;
+
+  const currentEvent = events.find((item) => String(item.id) === String(input.dataset.eventId));
+  const nextEvent = {
+    ...currentEvent,
+    [input.dataset.field]: input.value
+  };
+
+  await api(`/api/admin/events/${input.dataset.eventId}`, {
+    method: "PUT",
+    body: JSON.stringify(nextEvent)
+  });
+
+  await loadContent();
+});
+
+adminEventsList.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-remove-event]");
+  if (!button) return;
+
+  await api(`/api/admin/events/${button.dataset.removeEvent}`, {
+    method: "DELETE"
+  });
+
+  await loadContent();
+});
+
+announcementForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(announcementForm);
+  await api("/api/admin/announcements", {
+    method: "POST",
+    body: JSON.stringify({
+      category: formData.get("category"),
+      title: formData.get("title"),
+      description: formData.get("description"),
+      important: formData.get("important") === "on"
+    })
+  });
+
+  announcementForm.reset();
+  await loadContent();
+});
+
+adminAnnouncementsList.addEventListener("change", async (event) => {
+  const input = event.target;
+  if (!input.dataset.field) return;
+
+  const currentAnnouncement = announcements.find((item) => String(item.id) === String(input.dataset.announcementId));
+  const nextAnnouncement = {
+    ...currentAnnouncement,
+    [input.dataset.field]: input.dataset.field === "important" ? input.checked : input.value
+  };
+
+  await api(`/api/admin/announcements/${input.dataset.announcementId}`, {
+    method: "PUT",
+    body: JSON.stringify(nextAnnouncement)
+  });
+
+  await loadContent();
+});
+
+adminAnnouncementsList.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-remove-announcement]");
+  if (!button) return;
+
+  await api(`/api/admin/announcements/${button.dataset.removeAnnouncement}`, {
+    method: "DELETE"
+  });
+
+  await loadContent();
+});
+
 adminLoginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -191,6 +364,7 @@ adminLoginForm.addEventListener("submit", async (event) => {
 
   try {
     await loadStudents();
+    await loadContent();
   } catch (error) {
     adminLoginMessage.textContent = error.message;
     return;

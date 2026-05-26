@@ -19,6 +19,7 @@
       <a href="announcements.html">Announcements</a>
       <a href="portal.html">Student Portal</a>
       <a href="#bill-editor">Bill Editor</a>
+      <a href="#content-editor">Content Editor</a>
     </nav>
   </header>
 
@@ -86,6 +87,66 @@
           <span>Total Balance</span>
           <strong id="adminBillTotal">PHP 0</strong>
         </div>
+      </section>
+    </section>
+
+    <section class="content-editor" id="content-editor">
+      <section class="admin-panel">
+        <div>
+          <p class="eyebrow">Events</p>
+          <h2>Edit School Events</h2>
+        </div>
+
+        <form class="content-form" id="eventForm">
+          <label>
+            Date
+            <input name="eventDate" type="text" placeholder="June 3" required>
+          </label>
+          <label>
+            Category
+            <input name="category" type="text" placeholder="Opening Activity" required>
+          </label>
+          <label>
+            Title
+            <input name="title" type="text" placeholder="Event title" required>
+          </label>
+          <label>
+            Description
+            <textarea name="description" placeholder="Event description" required></textarea>
+          </label>
+          <button class="contact-button" type="submit">Add Event</button>
+        </form>
+
+        <div class="content-list" id="adminEventsList"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div>
+          <p class="eyebrow">Announcements</p>
+          <h2>Edit Announcements</h2>
+        </div>
+
+        <form class="content-form" id="announcementForm">
+          <label>
+            Category
+            <input name="category" type="text" placeholder="Important" required>
+          </label>
+          <label>
+            Title
+            <input name="title" type="text" placeholder="Announcement title" required>
+          </label>
+          <label>
+            Description
+            <textarea name="description" placeholder="Announcement description" required></textarea>
+          </label>
+          <label class="checkbox-label">
+            <input name="important" type="checkbox">
+            Mark as important
+          </label>
+          <button class="contact-button" type="submit">Add Announcement</button>
+        </form>
+
+        <div class="content-list" id="adminAnnouncementsList"></div>
       </section>
     </section>
   </main>

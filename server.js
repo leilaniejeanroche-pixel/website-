@@ -109,6 +109,16 @@ function serveStatic(req, res) {
 async function handleApi(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
+  if (req.method === "GET" && url.pathname === "/api/events") {
+    sendJson(res, 200, { events: await database.listEvents() });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/announcements") {
+    sendJson(res, 200, { announcements: await database.listAnnouncements() });
+    return;
+  }
+
   if (req.method === "POST" && url.pathname === "/api/students") {
     const body = await readBody(req);
     const requiredFields = ["studentName", "studentId", "gradeLevel", "guardianName", "guardianContact", "username", "password"];
@@ -161,6 +171,100 @@ async function handleApi(req, res) {
 
     sendJson(res, 200, { students: (await database.getAllStudents()).map(publicStudent) });
     return;
+  }
+
+  if (url.pathname === "/api/admin/events") {
+    if (!requireAdmin(req, res)) return;
+
+    if (req.method === "GET") {
+      sendJson(res, 200, { events: await database.listEvents() });
+      return;
+    }
+
+    if (req.method === "POST") {
+      const body = await readBody(req);
+      sendJson(res, 200, {
+        events: await database.addEvent({
+          eventDate: body.eventDate || "TBA",
+          category: body.category || "School Event",
+          title: body.title || "New Event",
+          description: body.description || "Event details will be posted soon."
+        })
+      });
+      return;
+    }
+  }
+
+  const eventMatch = url.pathname.match(/^\/api\/admin\/events\/(\d+)$/);
+
+  if (eventMatch) {
+    if (!requireAdmin(req, res)) return;
+
+    if (req.method === "PUT") {
+      const body = await readBody(req);
+      sendJson(res, 200, {
+        events: await database.updateEvent(Number(eventMatch[1]), {
+          eventDate: body.eventDate || "TBA",
+          category: body.category || "School Event",
+          title: body.title || "Event",
+          description: body.description || ""
+        })
+      });
+      return;
+    }
+
+    if (req.method === "DELETE") {
+      sendJson(res, 200, { events: await database.removeEvent(Number(eventMatch[1])) });
+      return;
+    }
+  }
+
+  if (url.pathname === "/api/admin/announcements") {
+    if (!requireAdmin(req, res)) return;
+
+    if (req.method === "GET") {
+      sendJson(res, 200, { announcements: await database.listAnnouncements() });
+      return;
+    }
+
+    if (req.method === "POST") {
+      const body = await readBody(req);
+      sendJson(res, 200, {
+        announcements: await database.addAnnouncement({
+          category: body.category || "Announcement",
+          title: body.title || "New Announcement",
+          description: body.description || "Announcement details will be posted soon.",
+          important: Boolean(body.important)
+        })
+      });
+      return;
+    }
+  }
+
+  const announcementMatch = url.pathname.match(/^\/api\/admin\/announcements\/(\d+)$/);
+
+  if (announcementMatch) {
+    if (!requireAdmin(req, res)) return;
+
+    if (req.method === "PUT") {
+      const body = await readBody(req);
+      sendJson(res, 200, {
+        announcements: await database.updateAnnouncement(Number(announcementMatch[1]), {
+          category: body.category || "Announcement",
+          title: body.title || "Announcement",
+          description: body.description || "",
+          important: Boolean(body.important)
+        })
+      });
+      return;
+    }
+
+    if (req.method === "DELETE") {
+      sendJson(res, 200, {
+        announcements: await database.removeAnnouncement(Number(announcementMatch[1]))
+      });
+      return;
+    }
   }
 
   const billMatch = url.pathname.match(/^\/api\/admin\/students\/([^/]+)\/bills(?:\/(\d+))?$/);
