@@ -5,6 +5,9 @@ const usePostgres = Boolean(process.env.DATABASE_URL);
 
 let sqliteDb;
 let pgPool;
+let useJsonStore = false;
+const dataDir = path.join(__dirname, "data");
+const jsonDbPath = path.join(dataDir, "db.json");
 
 if (usePostgres) {
   const { Pool } = require("pg");
@@ -14,16 +17,52 @@ if (usePostgres) {
     ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : undefined
   });
 } else {
-  const Database = require("better-sqlite3");
-  const dataDir = path.join(__dirname, "data");
-  const dbPath = path.join(dataDir, "school.db");
-
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  sqliteDb = new Database(dbPath);
-  sqliteDb.pragma("journal_mode = WAL");
+  try {
+    const Database = require("better-sqlite3");
+    const dbPath = path.join(dataDir, "school.db");
+    sqliteDb = new Database(dbPath);
+    sqliteDb.pragma("journal_mode = WAL");
+  } catch (error) {
+    useJsonStore = true;
+    console.warn("better-sqlite3 is unavailable. Using data/db.json fallback storage.");
+  }
+}
+
+function normalizeJsonStore(store = {}) {
+  return {
+    students: Array.isArray(store.students) ? store.students : [],
+    events: Array.isArray(store.events) ? store.events : [],
+    announcements: Array.isArray(store.announcements) ? store.announcements : [],
+    digitalForms: Array.isArray(store.digitalForms) ? store.digitalForms : []
+  };
+}
+
+function readJsonStore() {
+  if (!fs.existsSync(jsonDbPath)) {
+    return normalizeJsonStore();
+  }
+
+  try {
+    return normalizeJsonStore(JSON.parse(fs.readFileSync(jsonDbPath, "utf8")));
+  } catch (error) {
+    return normalizeJsonStore();
+  }
+}
+
+function writeJsonStore(store) {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
+  fs.writeFileSync(jsonDbPath, JSON.stringify(normalizeJsonStore(store), null, 2));
+}
+
+function nextId(items) {
+  return items.reduce((largest, item) => Math.max(largest, Number(item.id) || 0), 0) + 1;
 }
 
 const sqliteSchema = `
@@ -182,6 +221,11 @@ async function init() {
     return;
   }
 
+  if (useJsonStore) {
+    writeJsonStore(readJsonStore());
+    return;
+  }
+
   sqliteDb.exec(sqliteSchema);
 }
 
@@ -192,6 +236,16 @@ async function getBills(studentId) {
       [studentId]
     );
     return result.rows.map(rowToBill);
+  }
+
+  if (useJsonStore) {
+    const store = readJsonStore();
+    const student = store.students.find((item) => item.id === studentId);
+    return (student?.bills || []).map((bill) => ({
+      id: bill.id,
+      label: bill.label,
+      amount: Number(bill.amount) || 0
+    }));
   }
 
   return sqliteDb
@@ -249,6 +303,20 @@ async function createStudent(student, bills) {
     return withBills(student);
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    store.students.push({
+      ...student,
+      bills: bills.map((bill, index) => ({
+        id: index + 1,
+        label: bill.label,
+        amount: Number(bill.amount) || 0
+      }))
+    });
+    writeJsonStore(store);
+    return withBills(student);
+  }
+
   const insertStudent = sqliteDb.prepare(`
     INSERT INTO students (
       id, student_name, student_id, grade_level, guardian_name,
@@ -282,6 +350,10 @@ async function findStudentByUsername(username) {
     return rowToStudent(result.rows[0]);
   }
 
+  if (useJsonStore) {
+    return readJsonStore().students.find((student) => student.username === username) || null;
+  }
+
   return rowToStudent(sqliteDb.prepare("SELECT * FROM students WHERE username = ?").get(username));
 }
 
@@ -294,6 +366,9 @@ async function findStudentByLogin(username, password) {
       password
     ]);
     student = rowToStudent(result.rows[0]);
+  } else if (useJsonStore) {
+    student =
+      readJsonStore().students.find((item) => item.username === username && item.password === password) || null;
   } else {
     student = rowToStudent(
       sqliteDb.prepare("SELECT * FROM students WHERE username = ? AND password = ?").get(username, password)
@@ -307,6 +382,16 @@ async function getAllStudents() {
   if (usePostgres) {
     const result = await pgPool.query("SELECT * FROM students ORDER BY created_at DESC");
     return Promise.all(result.rows.map(rowToStudent).map(withBills));
+  }
+
+  if (useJsonStore) {
+    return readJsonStore()
+      .students.slice()
+      .sort((first, second) => String(second.createdAt).localeCompare(String(first.createdAt)))
+      .map((student) => ({
+        ...student,
+        bills: student.bills || []
+      }));
   }
 
   return Promise.all(
@@ -324,6 +409,8 @@ async function getStudentById(id) {
   if (usePostgres) {
     const result = await pgPool.query("SELECT * FROM students WHERE id = $1", [id]);
     student = rowToStudent(result.rows[0]);
+  } else if (useJsonStore) {
+    student = readJsonStore().students.find((item) => item.id === id) || null;
   } else {
     student = rowToStudent(sqliteDb.prepare("SELECT * FROM students WHERE id = ?").get(id));
   }
@@ -343,6 +430,20 @@ async function addBill(studentId, bill) {
       bill.amount,
       positionResult.rows[0].next_position || 0
     ]);
+    return getStudentById(studentId);
+  }
+
+  if (useJsonStore) {
+    const store = readJsonStore();
+    const student = store.students.find((item) => item.id === studentId);
+    if (!student) return null;
+    student.bills = student.bills || [];
+    student.bills.push({
+      id: nextId(student.bills),
+      label: bill.label,
+      amount: Number(bill.amount) || 0
+    });
+    writeJsonStore(store);
     return getStudentById(studentId);
   }
 
@@ -370,6 +471,17 @@ async function updateBill(studentId, billId, bill) {
     return result.rowCount > 0 ? getStudentById(studentId) : null;
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    const student = store.students.find((item) => item.id === studentId);
+    const currentBill = student?.bills?.find((item) => String(item.id) === String(billId));
+    if (!currentBill) return null;
+    currentBill.label = bill.label;
+    currentBill.amount = Number(bill.amount) || 0;
+    writeJsonStore(store);
+    return getStudentById(studentId);
+  }
+
   const result = sqliteDb
     .prepare("UPDATE bills SET label = ?, amount = ? WHERE student_id_ref = ? AND id = ?")
     .run(bill.label, bill.amount, studentId, billId);
@@ -383,6 +495,16 @@ async function removeBill(studentId, billId) {
     return getStudentById(studentId);
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    const student = store.students.find((item) => item.id === studentId);
+    if (student) {
+      student.bills = (student.bills || []).filter((bill) => String(bill.id) !== String(billId));
+      writeJsonStore(store);
+    }
+    return getStudentById(studentId);
+  }
+
   sqliteDb.prepare("DELETE FROM bills WHERE student_id_ref = ? AND id = ?").run(studentId, billId);
   return getStudentById(studentId);
 }
@@ -391,6 +513,10 @@ async function listEvents() {
   if (usePostgres) {
     const result = await pgPool.query("SELECT * FROM events ORDER BY position, id");
     return result.rows.map(rowToEvent);
+  }
+
+  if (useJsonStore) {
+    return readJsonStore().events;
   }
 
   return sqliteDb.prepare("SELECT * FROM events ORDER BY position, id").all().map(rowToEvent);
@@ -403,6 +529,19 @@ async function addEvent(event) {
       "INSERT INTO events (event_date, category, title, description, position) VALUES ($1, $2, $3, $4, $5)",
       [event.eventDate, event.category, event.title, event.description, positionResult.rows[0].next_position || 0]
     );
+    return listEvents();
+  }
+
+  if (useJsonStore) {
+    const store = readJsonStore();
+    store.events.push({
+      id: nextId(store.events),
+      eventDate: event.eventDate,
+      category: event.category,
+      title: event.title,
+      description: event.description
+    });
+    writeJsonStore(store);
     return listEvents();
   }
 
@@ -426,6 +565,19 @@ async function updateEvent(id, event) {
     return listEvents();
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    const currentEvent = store.events.find((item) => String(item.id) === String(id));
+    if (currentEvent) {
+      currentEvent.eventDate = event.eventDate;
+      currentEvent.category = event.category;
+      currentEvent.title = event.title;
+      currentEvent.description = event.description;
+      writeJsonStore(store);
+    }
+    return listEvents();
+  }
+
   sqliteDb
     .prepare("UPDATE events SET event_date = ?, category = ?, title = ?, description = ? WHERE id = ?")
     .run(event.eventDate, event.category, event.title, event.description, id);
@@ -438,6 +590,13 @@ async function removeEvent(id) {
     return listEvents();
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    store.events = store.events.filter((event) => String(event.id) !== String(id));
+    writeJsonStore(store);
+    return listEvents();
+  }
+
   sqliteDb.prepare("DELETE FROM events WHERE id = ?").run(id);
   return listEvents();
 }
@@ -446,6 +605,10 @@ async function listAnnouncements() {
   if (usePostgres) {
     const result = await pgPool.query("SELECT * FROM announcements ORDER BY position, id");
     return result.rows.map(rowToAnnouncement);
+  }
+
+  if (useJsonStore) {
+    return readJsonStore().announcements;
   }
 
   return sqliteDb.prepare("SELECT * FROM announcements ORDER BY position, id").all().map(rowToAnnouncement);
@@ -466,6 +629,19 @@ async function addAnnouncement(announcement) {
         positionResult.rows[0].next_position || 0
       ]
     );
+    return listAnnouncements();
+  }
+
+  if (useJsonStore) {
+    const store = readJsonStore();
+    store.announcements.push({
+      id: nextId(store.announcements),
+      category: announcement.category,
+      title: announcement.title,
+      description: announcement.description,
+      important: Boolean(announcement.important)
+    });
+    writeJsonStore(store);
     return listAnnouncements();
   }
 
@@ -493,6 +669,19 @@ async function updateAnnouncement(id, announcement) {
     return listAnnouncements();
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    const currentAnnouncement = store.announcements.find((item) => String(item.id) === String(id));
+    if (currentAnnouncement) {
+      currentAnnouncement.category = announcement.category;
+      currentAnnouncement.title = announcement.title;
+      currentAnnouncement.description = announcement.description;
+      currentAnnouncement.important = Boolean(announcement.important);
+      writeJsonStore(store);
+    }
+    return listAnnouncements();
+  }
+
   sqliteDb
     .prepare("UPDATE announcements SET category = ?, title = ?, description = ?, important = ? WHERE id = ?")
     .run(announcement.category, announcement.title, announcement.description, announcement.important ? 1 : 0, id);
@@ -505,6 +694,13 @@ async function removeAnnouncement(id) {
     return listAnnouncements();
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    store.announcements = store.announcements.filter((announcement) => String(announcement.id) !== String(id));
+    writeJsonStore(store);
+    return listAnnouncements();
+  }
+
   sqliteDb.prepare("DELETE FROM announcements WHERE id = ?").run(id);
   return listAnnouncements();
 }
@@ -513,6 +709,10 @@ async function listDigitalForms() {
   if (usePostgres) {
     const result = await pgPool.query("SELECT * FROM digital_forms ORDER BY position, id");
     return result.rows.map(rowToDigitalForm);
+  }
+
+  if (useJsonStore) {
+    return readJsonStore().digitalForms;
   }
 
   return sqliteDb.prepare("SELECT * FROM digital_forms ORDER BY position, id").all().map(rowToDigitalForm);
@@ -527,6 +727,18 @@ async function addDigitalForm(form) {
       "INSERT INTO digital_forms (title, description, button_label, position) VALUES ($1, $2, $3, $4)",
       [form.title, form.description, form.buttonLabel, positionResult.rows[0].next_position || 0]
     );
+    return listDigitalForms();
+  }
+
+  if (useJsonStore) {
+    const store = readJsonStore();
+    store.digitalForms.push({
+      id: nextId(store.digitalForms),
+      title: form.title,
+      description: form.description,
+      buttonLabel: form.buttonLabel
+    });
+    writeJsonStore(store);
     return listDigitalForms();
   }
 
@@ -548,6 +760,18 @@ async function updateDigitalForm(id, form) {
     return listDigitalForms();
   }
 
+  if (useJsonStore) {
+    const store = readJsonStore();
+    const currentForm = store.digitalForms.find((item) => String(item.id) === String(id));
+    if (currentForm) {
+      currentForm.title = form.title;
+      currentForm.description = form.description;
+      currentForm.buttonLabel = form.buttonLabel;
+      writeJsonStore(store);
+    }
+    return listDigitalForms();
+  }
+
   sqliteDb
     .prepare("UPDATE digital_forms SET title = ?, description = ?, button_label = ? WHERE id = ?")
     .run(form.title, form.description, form.buttonLabel, id);
@@ -557,6 +781,13 @@ async function updateDigitalForm(id, form) {
 async function removeDigitalForm(id) {
   if (usePostgres) {
     await pgPool.query("DELETE FROM digital_forms WHERE id = $1", [id]);
+    return listDigitalForms();
+  }
+
+  if (useJsonStore) {
+    const store = readJsonStore();
+    store.digitalForms = store.digitalForms.filter((form) => String(form.id) !== String(id));
+    writeJsonStore(store);
     return listDigitalForms();
   }
 

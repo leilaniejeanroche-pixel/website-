@@ -870,6 +870,253 @@ h2 {
   background: var(--dash-blue);
 }
 
+.dashboard-card-grid,
+.dashboard-lists {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dashboard-card-grid article,
+.dashboard-list-panel {
+  border: 1px solid var(--dash-line);
+  border-radius: 8px;
+  background: var(--dash-panel);
+  box-shadow: 0 16px 32px rgba(23, 32, 51, 0.07);
+}
+
+.dashboard-card-grid article {
+  min-height: 132px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 22px;
+}
+
+.dashboard-card-grid span,
+.dashboard-card-grid small {
+  color: var(--dash-muted);
+  font-weight: 800;
+}
+
+.dashboard-card-grid span {
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.dashboard-card-grid strong {
+  color: var(--dash-text);
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.1;
+}
+
+.dashboard-card-grid small {
+  font-size: 13px;
+}
+
+.dashboard-lists {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.dashboard-list-panel {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.dashboard-list-panel h2 {
+  margin-bottom: 0;
+  color: var(--dash-text);
+  font-size: 24px;
+}
+
+.dashboard-update-list {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-update-list article {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid var(--dash-line);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.dashboard-update-list strong {
+  color: var(--dash-text);
+  font-size: 15px;
+}
+
+.dashboard-update-list span {
+  color: var(--dash-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.balance-status-card {
+  display: grid;
+  gap: 6px;
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--dash-line);
+  border-left: 6px solid var(--dash-blue);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.balance-status-card span,
+.balance-status-card strong,
+.balance-status-card small {
+  display: block;
+}
+
+.balance-status-card span {
+  color: var(--dash-text);
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.balance-status-card strong {
+  color: var(--dash-text);
+  font-size: 16px;
+}
+
+.balance-status-card small {
+  color: var(--dash-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.balance-status-card.paid {
+  border-left-color: #16a34a;
+}
+
+.balance-status-card.near-due {
+  border-left-color: #ca8a04;
+}
+
+.balance-status-card.overdue {
+  border-left-color: #dc2626;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.feature-panel {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--dash-line);
+  border-radius: 8px;
+  background: var(--dash-panel);
+  box-shadow: 0 16px 32px rgba(23, 32, 51, 0.07);
+}
+
+.feature-panel h2 {
+  margin-bottom: 0;
+  color: var(--dash-text);
+  font-size: 24px;
+}
+
+.tracker-list,
+.service-list,
+.mini-form {
+  display: grid;
+  gap: 10px;
+}
+
+.tracker-item {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--dash-line);
+  border-radius: 8px;
+  color: var(--dash-text);
+  background: #f8fafc;
+  font-weight: 800;
+}
+
+.tracker-item input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--dash-blue);
+}
+
+.mini-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--dash-text);
+  font-weight: 800;
+}
+
+.mini-form input,
+.mini-form select,
+.mini-form textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--dash-line);
+  border-radius: 8px;
+  color: var(--dash-text);
+  background: #ffffff;
+  font: inherit;
+}
+
+.mini-form textarea {
+  min-height: 86px;
+  resize: vertical;
+}
+
+.service-list article,
+.service-item {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid var(--dash-line);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.service-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.service-list strong,
+.service-list span,
+.service-list small,
+.service-item strong,
+.service-item span,
+.service-item small {
+  display: block;
+}
+
+.service-list strong,
+.service-item strong {
+  color: var(--dash-text);
+  font-size: 15px;
+}
+
+.service-list span,
+.service-list small,
+.service-item span,
+.service-item small {
+  margin-top: 3px;
+  color: var(--dash-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .dashboard-page .contact-button,
 .dashboard-page .small-button {
   background: var(--dash-blue);
@@ -1914,6 +2161,9 @@ h2 {
   .school-hero,
   .school-info-strip,
   .preview-grid,
+  .dashboard-card-grid,
+  .dashboard-lists,
+  .feature-grid,
   .directory-grid,
   .form-grid,
   .gallery-grid,
@@ -1932,6 +2182,7 @@ h2 {
   .content-editor,
   .bill-editor-form,
   .editable-bill-item,
+  .service-item,
   .dashboard-page .admin-tools,
   .news-grid {
     grid-template-columns: 1fr;

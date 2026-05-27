@@ -10,6 +10,8 @@ const digitalFormForm = document.querySelector("#digitalFormForm");
 const adminEventsList = document.querySelector("#adminEventsList");
 const adminAnnouncementsList = document.querySelector("#adminAnnouncementsList");
 const adminFormsList = document.querySelector("#adminFormsList");
+const adminRequestList = document.querySelector("#adminRequestList");
+const adminLostFoundList = document.querySelector("#adminLostFoundList");
 const studentCount = document.querySelector("#studentCount");
 const eventCount = document.querySelector("#eventCount");
 const announcementCount = document.querySelector("#announcementCount");
@@ -20,6 +22,8 @@ let students = [];
 let events = [];
 let announcements = [];
 let digitalForms = [];
+const requestsKey = "spaiStudentRequests";
+const lostFoundKey = "spaiLostFoundItems";
 
 function setAdminVisible(isVisible) {
   adminSections.forEach((section) => {
@@ -90,6 +94,79 @@ function renderSummary() {
 
 function renderStudents() {
   renderSummary();
+}
+
+function readStoredList(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function writeStoredList(key, items) {
+  localStorage.setItem(key, JSON.stringify(items));
+}
+
+function renderAdminRequests() {
+  const requests = readStoredList(requestsKey);
+
+  if (requests.length === 0) {
+    adminRequestList.innerHTML = '<p class="empty-message">No student requests submitted yet.</p>';
+    return;
+  }
+
+  adminRequestList.innerHTML = requests
+    .slice()
+    .reverse()
+    .map(
+      (request) => `
+        <article class="service-item">
+          <div>
+            <strong>${escapeHtml(request.type)}</strong>
+            <span>${escapeHtml(request.studentName)} | ${escapeHtml(request.studentId)} | ${escapeHtml(request.date)}</span>
+            <small>${escapeHtml(request.details)}</small>
+          </div>
+          <button class="small-button" type="button" data-complete-request="${request.id}">
+            ${request.status === "Completed" ? "Completed" : "Mark Done"}
+          </button>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderAdminLostFound() {
+  const items = readStoredList(lostFoundKey);
+
+  if (items.length === 0) {
+    adminLostFoundList.innerHTML = '<p class="empty-message">No lost or found reports yet.</p>';
+    return;
+  }
+
+  adminLostFoundList.innerHTML = items
+    .slice()
+    .reverse()
+    .map(
+      (item) => `
+        <article class="service-item">
+          <div>
+            <strong>${escapeHtml(item.type)}: ${escapeHtml(item.item)}</strong>
+            <span>${escapeHtml(item.location)} | ${escapeHtml(item.studentName)} | ${escapeHtml(item.date)}</span>
+            <small>Status: ${escapeHtml(item.status)}</small>
+          </div>
+          <button class="small-button" type="button" data-resolve-item="${item.id}">
+            ${item.status === "Resolved" ? "Resolved" : "Mark Resolved"}
+          </button>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderLocalServiceTools() {
+  renderAdminRequests();
+  renderAdminLostFound();
 }
 
 function renderEventsEditor() {
@@ -335,6 +412,29 @@ adminLoginForm.addEventListener("submit", async (event) => {
   adminLogin.hidden = true;
   adminMain.hidden = true;
   setAdminVisible(true);
+  renderLocalServiceTools();
+});
+
+adminRequestList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-complete-request]");
+  if (!button) return;
+
+  const requests = readStoredList(requestsKey).map((request) =>
+    String(request.id) === String(button.dataset.completeRequest) ? { ...request, status: "Completed" } : request
+  );
+  writeStoredList(requestsKey, requests);
+  renderAdminRequests();
+});
+
+adminLostFoundList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-resolve-item]");
+  if (!button) return;
+
+  const items = readStoredList(lostFoundKey).map((item) =>
+    String(item.id) === String(button.dataset.resolveItem) ? { ...item, status: "Resolved" } : item
+  );
+  writeStoredList(lostFoundKey, items);
+  renderAdminLostFound();
 });
 
 adminLogoutButton.addEventListener("click", () => {

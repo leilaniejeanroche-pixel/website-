@@ -32,7 +32,9 @@
       <a href="announcements.html">Announcements</a>
       <a href="#billing">Balance</a>
       <a href="events.html">Calendar</a>
-      <a href="downloads.html">Research Tracker</a>
+      <a href="#researchTracker">Research Tracker</a>
+      <a href="#studentRequests">Requests</a>
+      <a href="#lostFound">Lost & Found</a>
       <a href="downloads.html">Downloads</a>
       <a href="gallery.html">Gallery</a>
       <a href="#studentProfile">Profile</a>
@@ -63,7 +65,7 @@
         <a href="#billing">View Balance</a>
         <a href="forms.html">Download Forms</a>
         <a href="events.html">School Calendar</a>
-        <a href="downloads.html">Research Tracker</a>
+        <a href="#researchTracker">Research Tracker</a>
       </section>
 
       <section class="dashboard-lists" id="dashboardLists">
@@ -96,13 +98,79 @@
         <article class="bill-panel" id="billing">
           <div>
             <p class="eyebrow">Statement</p>
-            <h2>Billing in Pesos</h2>
+            <h2>Smart Balance Tracker</h2>
+          </div>
+          <div class="balance-status-card" id="balanceStatusCard">
+            <span id="balanceStatusLabel">Status</span>
+            <strong id="balanceDueDate">Due Date: June 20</strong>
+            <small id="balanceReminder">Payment reminder will appear here.</small>
           </div>
           <div class="bill-list" id="billList"></div>
           <div class="bill-total">
             <span>Total Balance</span>
             <strong id="billTotal">PHP 0</strong>
           </div>
+        </article>
+      </section>
+
+      <section class="feature-grid" aria-label="Student service features">
+        <article class="feature-panel" id="researchTracker">
+          <div>
+            <p class="eyebrow">Research</p>
+            <h2>Research Tracker</h2>
+          </div>
+          <div class="tracker-list" id="researchChecklist"></div>
+        </article>
+
+        <article class="feature-panel" id="studentRequests">
+          <div>
+            <p class="eyebrow">Requests</p>
+            <h2>Student Request System</h2>
+          </div>
+          <form class="mini-form" id="requestForm">
+            <label>
+              Request type
+              <select name="type" required>
+                <option value="">Choose request</option>
+                <option>Certificate Request</option>
+                <option>School Document</option>
+                <option>Clearance Request</option>
+                <option>Enrollment Form</option>
+              </select>
+            </label>
+            <label>
+              Details
+              <textarea name="details" placeholder="Describe what you need" required></textarea>
+            </label>
+            <button class="contact-button" type="submit">Submit Request</button>
+          </form>
+          <div class="service-list" id="requestList"></div>
+        </article>
+
+        <article class="feature-panel" id="lostFound">
+          <div>
+            <p class="eyebrow">Campus Help</p>
+            <h2>Lost & Found</h2>
+          </div>
+          <form class="mini-form" id="lostFoundForm">
+            <label>
+              Type
+              <select name="type" required>
+                <option>Lost</option>
+                <option>Found</option>
+              </select>
+            </label>
+            <label>
+              Item
+              <input name="item" type="text" placeholder="Black wallet, blue umbrella" required>
+            </label>
+            <label>
+              Location
+              <input name="location" type="text" placeholder="Library, gym, classroom" required>
+            </label>
+            <button class="contact-button" type="submit">Post Item</button>
+          </form>
+          <div class="service-list" id="lostFoundList"></div>
         </article>
       </section>
     </div>
