@@ -3,6 +3,10 @@ const dashboard = document.querySelector("#studentDashboard");
 const subjectList = document.querySelector("#subjectList");
 const billList = document.querySelector("#billList");
 const billTotal = document.querySelector("#billTotal");
+const topbarStudentName = document.querySelector("#topbarStudentName");
+const topbarStudentMeta = document.querySelector("#topbarStudentMeta");
+const topbarLogoutButton = document.querySelector("#topbarLogoutButton");
+const quickActions = document.querySelector(".student-quick-actions");
 const sessionKey = "spaiStudentSession";
 
 const subjectsByLevel = {
@@ -55,6 +59,9 @@ function getSubjects(gradeLevel) {
 
 function showLoginRequired() {
   dashboard.hidden = true;
+  quickActions.hidden = true;
+  topbarStudentName.textContent = "Student Profile";
+  topbarStudentMeta.textContent = "Please sign in";
   profile.innerHTML = `
     <div>
       <p class="eyebrow">Login Required</p>
@@ -70,12 +77,14 @@ function renderAccount(account) {
   const bills = account.bills || [];
   const total = bills.reduce((sum, bill) => sum + (Number(bill.amount) || 0), 0);
 
+  topbarStudentName.textContent = account.studentName;
+  topbarStudentMeta.textContent = `${account.studentId} | ${account.gradeLevel}`;
+
   profile.innerHTML = `
     <div>
       <p class="eyebrow">Student Dashboard</p>
       <h1>${escapeHtml(account.studentName)}</h1>
       <p>${escapeHtml(account.studentId)} | ${escapeHtml(account.gradeLevel)}</p>
-      <button class="small-button logout-button" id="logoutButton" type="button">Log Out</button>
     </div>
     <div class="profile-card">
       <span>Guardian</span>
@@ -107,12 +116,12 @@ function renderAccount(account) {
     .join("");
 
   billTotal.textContent = peso.format(total);
-
-  document.querySelector("#logoutButton").addEventListener("click", () => {
-    sessionStorage.removeItem(sessionKey);
-    window.location.href = "login.html";
-  });
 }
+
+topbarLogoutButton.addEventListener("click", () => {
+  sessionStorage.removeItem(sessionKey);
+  window.location.href = "login.html";
+});
 
 const storedSession = sessionStorage.getItem(sessionKey);
 

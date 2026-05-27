@@ -1,7 +1,9 @@
 const adminLogin = document.querySelector("#adminLogin");
 const adminLoginForm = document.querySelector("#adminLoginForm");
 const adminLoginMessage = document.querySelector("#adminLoginMessage");
-const adminSections = document.querySelectorAll(".portal-hero, .admin-summary, .admin-tools, .content-editor");
+const adminMain = document.querySelector(".login-main");
+const adminSections = document.querySelectorAll(".admin-private");
+const adminLogoutButton = document.querySelector("#adminLogoutButton");
 const eventForm = document.querySelector("#eventForm");
 const announcementForm = document.querySelector("#announcementForm");
 const digitalFormForm = document.querySelector("#digitalFormForm");
@@ -331,7 +333,17 @@ adminLoginForm.addEventListener("submit", async (event) => {
   }
 
   adminLogin.hidden = true;
+  adminMain.hidden = true;
   setAdminVisible(true);
+});
+
+adminLogoutButton.addEventListener("click", () => {
+  adminPassword = "";
+  adminLoginForm.reset();
+  adminLoginMessage.textContent = "";
+  adminLogin.hidden = false;
+  adminMain.hidden = false;
+  setAdminVisible(false);
 });
 
 setAdminVisible(false);

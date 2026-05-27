@@ -6,24 +6,8 @@
   <title>Admin Controller | Saint Patrick's Academy, Inc.</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="portal-page">
-  <header class="site-header">
-    <a class="brand" href="index.html" aria-label="Saint Patrick's Academy, Inc.">
-      <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
-      <span>Saint Patrick's Academy, Inc.</span>
-    </a>
-
-    <nav aria-label="Admin navigation">
-      <a href="index.html">Home</a>
-      <a href="events.html">Events</a>
-      <a href="announcements.html">Announcements</a>
-      <a href="portal.html">Student Portal</a>
-      <a href="billing-admin.html">Student Billing</a>
-      <a href="#content-editor">Content Editor</a>
-    </nav>
-  </header>
-
-  <main class="portal-main">
+<body class="portal-page dashboard-page">
+  <main class="portal-main login-main">
     <section class="login-panel" id="adminLogin">
       <form class="login-form" id="adminLoginForm">
         <div>
@@ -39,133 +23,184 @@
         <p class="form-note" id="adminLoginMessage"></p>
       </form>
     </section>
+  </main>
 
-    <section class="portal-hero">
-      <div>
-        <p class="eyebrow">Admin Only</p>
-        <h1>Website Controller</h1>
-        <p>
-          Manage student accounts, billing, school announcements, events,
-          and digital forms from one organized dashboard.
-        </p>
-      </div>
+  <header class="dashboard-topbar admin-private">
+    <a class="dashboard-brand" href="index.html" aria-label="Saint Patrick's Academy, Inc.">
       <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
-    </section>
+      <span>Saint Patrick's Academy, Inc.</span>
+    </a>
+    <label class="dashboard-search">
+      <span>Search</span>
+      <input type="search" placeholder="Search dashboard, forms, events">
+    </label>
+    <div class="dashboard-user">
+      <button class="icon-button" type="button" aria-label="Notifications">!</button>
+      <div>
+        <strong>Admin Controller</strong>
+        <span>Website manager</span>
+      </div>
+      <button class="small-button logout-button" id="adminLogoutButton" type="button">Logout</button>
+    </div>
+  </header>
 
-    <section class="admin-summary" aria-label="Admin dashboard summary">
-      <article>
-        <span>Students</span>
-        <strong id="studentCount">0</strong>
-      </article>
-      <article>
-        <span>Events</span>
-        <strong id="eventCount">0</strong>
-      </article>
-      <article>
-        <span>Announcements</span>
-        <strong id="announcementCount">0</strong>
-      </article>
-      <article>
-        <span>Digital Forms</span>
-        <strong id="formCount">0</strong>
-      </article>
-    </section>
+  <main class="dashboard-shell admin-private">
+    <aside class="dashboard-sidebar" aria-label="Admin sidebar navigation">
+      <a class="active" href="#dashboard">Dashboard</a>
+      <a href="announcements.html">Announcements</a>
+      <a href="billing-admin.html">Student Balance</a>
+      <a href="events.html">Calendar</a>
+      <a href="downloads.html">Downloads</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="portal.html">Profile</a>
+      <a href="#forms-editor">Settings</a>
+    </aside>
 
-    <section class="admin-tools" aria-label="Admin quick tools">
-      <a href="billing-admin.html">Student Billing</a>
-      <a href="#content-editor">Events & Announcements</a>
-      <a href="#forms-editor">Digital Forms</a>
-      <a href="events.html">View Events Page</a>
-      <a href="announcements.html">View Announcements</a>
-      <a href="forms.html">View Forms Page</a>
-    </section>
-
-    <section class="content-editor" id="content-editor">
-      <section class="admin-panel">
+    <div class="dashboard-content">
+      <section class="portal-hero compact-hero" id="dashboard">
         <div>
-          <p class="eyebrow">Events</p>
-          <h2>Edit School Events</h2>
+          <p class="eyebrow">Admin Only</p>
+          <h1>Website Controller</h1>
+          <p>
+            Manage student accounts, billing, school announcements, events,
+            and digital forms from one organized dashboard.
+          </p>
         </div>
-
-        <form class="content-form" id="eventForm">
-          <label>
-            Date
-            <input name="eventDate" type="text" placeholder="June 3" required>
-          </label>
-          <label>
-            Category
-            <input name="category" type="text" placeholder="Opening Activity" required>
-          </label>
-          <label>
-            Title
-            <input name="title" type="text" placeholder="Event title" required>
-          </label>
-          <label>
-            Description
-            <textarea name="description" placeholder="Event description" required></textarea>
-          </label>
-          <button class="contact-button" type="submit">Add Event</button>
-        </form>
-
-        <div class="content-list" id="adminEventsList"></div>
       </section>
 
-      <section class="admin-panel">
-        <div>
-          <p class="eyebrow">Announcements</p>
-          <h2>Edit Announcements</h2>
-        </div>
-
-        <form class="content-form" id="announcementForm">
-          <label>
-            Category
-            <input name="category" type="text" placeholder="Important" required>
-          </label>
-          <label>
-            Title
-            <input name="title" type="text" placeholder="Announcement title" required>
-          </label>
-          <label>
-            Description
-            <textarea name="description" placeholder="Announcement description" required></textarea>
-          </label>
-          <label class="checkbox-label">
-            <input name="important" type="checkbox">
-            Mark as important
-          </label>
-          <button class="contact-button" type="submit">Add Announcement</button>
-        </form>
-
-        <div class="content-list" id="adminAnnouncementsList"></div>
+      <section class="admin-summary" aria-label="Admin dashboard summary">
+        <article>
+          <span>Students</span>
+          <strong id="studentCount">0</strong>
+        </article>
+        <article>
+          <span>Events</span>
+          <strong id="eventCount">0</strong>
+        </article>
+        <article>
+          <span>Announcements</span>
+          <strong id="announcementCount">0</strong>
+        </article>
+        <article>
+          <span>Digital Forms</span>
+          <strong id="formCount">0</strong>
+        </article>
       </section>
-    </section>
 
-    <section class="content-editor forms-editor" id="forms-editor">
-      <section class="admin-panel">
-        <div>
-          <p class="eyebrow">Digital Forms</p>
-          <h2>Edit Forms Page</h2>
-        </div>
-
-        <form class="content-form" id="digitalFormForm">
-          <label>
-            Form title
-            <input name="title" type="text" placeholder="Enrollment Request" required>
-          </label>
-          <label>
-            Description
-            <textarea name="description" placeholder="What is this form for?" required></textarea>
-          </label>
-          <label>
-            Button label
-            <input name="buttonLabel" type="text" placeholder="Submit Form" required>
-          </label>
-          <button class="contact-button" type="submit">Add Digital Form</button>
-        </form>
-
-        <div class="content-list" id="adminFormsList"></div>
+      <section class="admin-tools" aria-label="Admin quick tools">
+        <a href="billing-admin.html">View Balance</a>
+        <a href="forms.html">Download Forms</a>
+        <a href="events.html">School Calendar</a>
+        <a href="#forms-editor">Research Tracker</a>
       </section>
-    </section>
+
+      <section class="content-editor" id="content-editor">
+        <section class="admin-panel">
+          <div>
+            <p class="eyebrow">Events</p>
+            <h2>Edit School Events</h2>
+          </div>
+
+          <form class="content-form" id="eventForm">
+            <label>
+              Date
+              <input name="eventDate" type="text" placeholder="June 3" required>
+            </label>
+            <label>
+              Category
+              <input name="category" type="text" placeholder="Opening Activity" required>
+            </label>
+            <label>
+              Title
+              <input name="title" type="text" placeholder="Event title" required>
+            </label>
+            <label>
+              Description
+              <textarea name="description" placeholder="Event description" required></textarea>
+            </label>
+            <button class="contact-button" type="submit">Add Event</button>
+          </form>
+
+          <div class="content-list" id="adminEventsList"></div>
+        </section>
+
+        <section class="admin-panel">
+          <div>
+            <p class="eyebrow">Announcements</p>
+            <h2>Edit Announcements</h2>
+          </div>
+
+          <form class="content-form" id="announcementForm">
+            <label>
+              Category
+              <input name="category" type="text" placeholder="Important" required>
+            </label>
+            <label>
+              Title
+              <input name="title" type="text" placeholder="Announcement title" required>
+            </label>
+            <label>
+              Description
+              <textarea name="description" placeholder="Announcement description" required></textarea>
+            </label>
+            <label class="checkbox-label">
+              <input name="important" type="checkbox">
+              Mark as important
+            </label>
+            <button class="contact-button" type="submit">Add Announcement</button>
+          </form>
+
+          <div class="content-list" id="adminAnnouncementsList"></div>
+        </section>
+      </section>
+
+      <section class="content-editor forms-editor" id="forms-editor">
+        <section class="admin-panel">
+          <div>
+            <p class="eyebrow">Digital Forms</p>
+            <h2>Edit Forms Page</h2>
+          </div>
+
+          <form class="content-form" id="digitalFormForm">
+            <label>
+              Form title
+              <input name="title" type="text" placeholder="Enrollment Request" required>
+            </label>
+            <label>
+              Description
+              <textarea name="description" placeholder="What is this form for?" required></textarea>
+            </label>
+            <label>
+              Button label
+              <input name="buttonLabel" type="text" placeholder="Submit Form" required>
+            </label>
+            <button class="contact-button" type="submit">Add Digital Form</button>
+          </form>
+
+          <div class="content-list" id="adminFormsList"></div>
+        </section>
+      </section>
+    </div>
+
+    <aside class="dashboard-rightbar" aria-label="Calendar and reminders">
+      <section class="calendar-widget">
+        <div class="calendar-heading">
+          <strong>May 2026</strong>
+          <span>School Calendar</span>
+        </div>
+        <div class="calendar-grid" aria-label="May 2026 calendar">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          <time>24</time><time>25</time><time>26</time><time class="active">27</time><time>28</time><time>29</time><time>30</time>
+        </div>
+      </section>
+      <section class="schedule-list">
+        <h2>Schedule</h2>
+        <article><strong>Quarter Exams</strong><span>May 28, 8:00 AM</span></article>
+        <article><strong>School Event</strong><span>May 29, 1:00 PM</span></article>
+        <article><strong>Holiday Reminder</strong><span>June 1</span></article>
+        <article><strong>Forms Deadline</strong><span>June 3, 5:00 PM</span></article>
+      </section>
+    </aside>
   </main>
 
   <script src="admin.js"></script>

@@ -6,46 +6,90 @@
   <title>Student Dashboard | Saint Patrick's Academy, Inc.</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="portal-page">
-  <header class="site-header">
-    <a class="brand" href="index.html" aria-label="Saint Patrick's Academy, Inc.">
+<body class="portal-page dashboard-page">
+  <header class="dashboard-topbar" id="studentTopbar">
+    <a class="dashboard-brand" href="index.html" aria-label="Saint Patrick's Academy, Inc.">
       <img src="assets/logo.jpg" alt="Saint Patrick's Academy logo">
       <span>Saint Patrick's Academy, Inc.</span>
     </a>
-
-    <nav aria-label="Student dashboard navigation">
-      <a href="index.html">Home</a>
-      <a href="events.html">Events</a>
-      <a href="announcements.html">Announcements</a>
-      <a href="portal.html">Create Account</a>
-      <a href="login.html">Student Login</a>
-    </nav>
+    <label class="dashboard-search">
+      <span>Search</span>
+      <input type="search" placeholder="Search announcements, forms, subjects">
+    </label>
+    <div class="dashboard-user">
+      <button class="icon-button" type="button" aria-label="Notifications">!</button>
+      <div>
+        <strong id="topbarStudentName">Student Profile</strong>
+        <span id="topbarStudentMeta">Signed in</span>
+      </div>
+      <button class="small-button logout-button" id="topbarLogoutButton" type="button">Logout</button>
+    </div>
   </header>
 
-  <main class="portal-main">
-    <section class="student-profile" id="studentProfile"></section>
+  <main class="dashboard-shell">
+    <aside class="dashboard-sidebar" aria-label="Student sidebar navigation">
+      <a class="active" href="#dashboard">Dashboard</a>
+      <a href="announcements.html">Announcements</a>
+      <a href="#billing">Student Balance</a>
+      <a href="events.html">Calendar</a>
+      <a href="downloads.html">Downloads</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="#profile">Profile</a>
+      <a href="faq.html">Settings</a>
+    </aside>
 
-    <section class="student-dashboard" id="studentDashboard">
-      <article class="subject-panel">
-        <div>
-          <p class="eyebrow">Class List</p>
-          <h2>Subjects & Teachers</h2>
-        </div>
-        <div class="subject-list" id="subjectList"></div>
-      </article>
+    <div class="dashboard-content">
+      <section class="student-profile" id="studentProfile"></section>
 
-      <article class="bill-panel" id="billing">
-        <div>
-          <p class="eyebrow">Statement</p>
-          <h2>Billing in Pesos</h2>
+      <section class="admin-tools student-quick-actions" aria-label="Student quick access">
+        <a href="#billing">View Balance</a>
+        <a href="forms.html">Download Forms</a>
+        <a href="events.html">School Calendar</a>
+        <a href="downloads.html">Research Tracker</a>
+      </section>
+
+      <section class="student-dashboard" id="studentDashboard">
+        <article class="subject-panel">
+          <div>
+            <p class="eyebrow">Class List</p>
+            <h2>Subjects & Teachers</h2>
+          </div>
+          <div class="subject-list" id="subjectList"></div>
+        </article>
+
+        <article class="bill-panel" id="billing">
+          <div>
+            <p class="eyebrow">Statement</p>
+            <h2>Billing in Pesos</h2>
+          </div>
+          <div class="bill-list" id="billList"></div>
+          <div class="bill-total">
+            <span>Total Balance</span>
+            <strong id="billTotal">PHP 0</strong>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <aside class="dashboard-rightbar" aria-label="Calendar and reminders">
+      <section class="calendar-widget">
+        <div class="calendar-heading">
+          <strong>May 2026</strong>
+          <span>School Calendar</span>
         </div>
-        <div class="bill-list" id="billList"></div>
-        <div class="bill-total">
-          <span>Total Balance</span>
-          <strong id="billTotal">PHP 0</strong>
+        <div class="calendar-grid" aria-label="May 2026 calendar">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          <time>24</time><time>25</time><time>26</time><time class="active">27</time><time>28</time><time>29</time><time>30</time>
         </div>
-      </article>
-    </section>
+      </section>
+      <section class="schedule-list">
+        <h2>Schedule</h2>
+        <article><strong>Exams</strong><span>May 28, 8:00 AM</span></article>
+        <article><strong>School Event</strong><span>May 29, 1:00 PM</span></article>
+        <article><strong>Holiday</strong><span>June 1</span></article>
+        <article><strong>Project Deadline</strong><span>June 3, 5:00 PM</span></article>
+      </section>
+    </aside>
   </main>
 
   <script src="student.js"></script>
