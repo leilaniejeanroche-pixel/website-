@@ -28,24 +28,60 @@
 
   <main class="dashboard-shell">
     <aside class="dashboard-sidebar" aria-label="Student sidebar navigation">
-      <a class="active" href="#dashboard">Dashboard</a>
+      <a class="active" href="#dashboardOverview">Dashboard</a>
       <a href="announcements.html">Announcements</a>
-      <a href="#billing">Student Balance</a>
+      <a href="#billing">Balance</a>
       <a href="events.html">Calendar</a>
+      <a href="downloads.html">Research Tracker</a>
       <a href="downloads.html">Downloads</a>
       <a href="gallery.html">Gallery</a>
-      <a href="#profile">Profile</a>
-      <a href="faq.html">Settings</a>
+      <a href="#studentProfile">Profile</a>
     </aside>
 
     <div class="dashboard-content">
       <section class="student-profile" id="studentProfile"></section>
+
+      <section class="dashboard-card-grid" id="dashboardOverview" aria-label="Dashboard overview">
+        <article>
+          <span>Balance</span>
+          <strong id="balanceCardAmount">PHP 0</strong>
+          <small>Remaining balance</small>
+        </article>
+        <article>
+          <span>Upcoming Event</span>
+          <strong id="eventCardTitle">School Event</strong>
+          <small id="eventCardDate">See calendar</small>
+        </article>
+        <article>
+          <span>Announcements</span>
+          <strong id="announcementCardCount">0 New Posts</strong>
+          <small>Latest school updates</small>
+        </article>
+      </section>
 
       <section class="admin-tools student-quick-actions" aria-label="Student quick access">
         <a href="#billing">View Balance</a>
         <a href="forms.html">Download Forms</a>
         <a href="events.html">School Calendar</a>
         <a href="downloads.html">Research Tracker</a>
+      </section>
+
+      <section class="dashboard-lists" id="dashboardLists">
+        <article class="dashboard-list-panel">
+          <div>
+            <p class="eyebrow">Announcements</p>
+            <h2>Latest Announcements</h2>
+          </div>
+          <div class="dashboard-update-list" id="dashboardAnnouncements"></div>
+        </article>
+
+        <article class="dashboard-list-panel">
+          <div>
+            <p class="eyebrow">Updates</p>
+            <h2>Upcoming Events</h2>
+          </div>
+          <div class="dashboard-update-list" id="dashboardEvents"></div>
+        </article>
       </section>
 
       <section class="student-dashboard" id="studentDashboard">
